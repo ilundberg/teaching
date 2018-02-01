@@ -1,0 +1,356 @@
+
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{bm}
+\usepackage{parskip}
+\usepackage{listings}
+\usepackage[margin=.8in]{geometry}
+\setlength{\parindent}{0in}
+\usepackage{indentfirst}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{tikz}
+\usetikzlibrary{arrows,shapes.arrows,positioning,shapes}
+\usepackage{enumitem}
+\usepackage{array}
+\usepackage{arydshln}
+\usepackage{booktabs}
+\newcolumntype{M}[1]{>{\centering\arraybackslash}m{#1}}
+\usepackage[english, cleanlook]{isodate}
+\usepackage{setspace}
+\setstretch{1.1}
+\usepackage[round]{natbib}
+\bibliographystyle{humannat-mod}
+\usepackage{amsfonts}
+\newcommand{\E}{{\rm I\kern-.3em E}}
+\newcommand{\Var}{\text{Var}}
+\newcommand{\V}{\text{V}}
+\newcommand{\N}{\mathcal{N}}
+\newcommand{\I}{\text{I}}
+\newcommand{\Cov}{\text{Cov}}
+\newcommand{\Cor}{\text{Cor}}
+\newcommand{\logit}{\text{logit}}
+\newcommand{\iid}{\stackrel{\text{iid}}{\sim}}
+\newcommand{\bblue}[1]{\textbf{\textcolor{blue}{#1}}}
+\newcommand{\bgreen}[1]{\textbf{\color{olive}{#1}}}
+\usepackage{lscape}
+\usepackage{soul,color}
+\usepackage{rotating}
+\usepackage[compact]{titlesec}
+\usepackage[labelfont=bf]{caption}
+\usepackage[hang]{footmisc}
+\setlength\footnotemargin{0em}
+\newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\def\arraystretch{1.3}
+\usepackage{caption}
+\captionsetup{labelfont={color=blue,bf}}
+
+\title{\vspace{-1.5cm}Key topics in Soc 401/504: Advanced Social Statistics\\GLMs, maximum likelihood, and quantities of interest\vspace{-.9cm}}
+\date{\vspace{-1.2cm}\small \begin{tabular}{p{.6\textwidth}p{.4\textwidth}}Last updated: \today & Ian Lundberg (ilundberg@princeton.edu) \end{tabular}\vspace{-.3cm}}
+
+\begin{document}
+
+\maketitle
+
+\section*{\textcolor{blue}{Defining GLMs}\footnote{For alternative presentations of GLMs, we recommend \citet{agresti2015} and \citet{powers2008}. A classic reference is \citet{mccullagh1989}. Handout color scheme inspired by \citet{efron2016}.}}
+
+A \bgreen{generalized linear model} (GLM) extends the linear model to various response types: binary, count, ordinal, duration, etc. The \bgreen{data generating process} in a GLM involves three elements:
+
+$$
+\overbrace{\vec{X_i}\vec\beta = \eta_i}^\text{\bgreen{Linear predictor}} \qquad 
+\overbrace{\eta_i = g(\mu_i)}^\text{\bgreen{Link function $g$}} \qquad 
+\overbrace{Y_i \sim f_Y(\mu_i,\gamma)}^\text{\bgreen{Stochastic component}}
+$$
+
+GLMs are defined for data generated from distributions $f_Y$ in the \bgreen{exponential family} (see Supplement \ref{exponentialFamily}). We use $\vec\theta$ to denote the full set of parameters to be estimated, which include coefficients $\vec\beta$ and, if relevant, a parameter $\gamma$ related to the variance. Table \ref{tbl:GLMs} provides examples of GLMs.
+
+\section*{\bblue{Maximum likelihood}}
+
+Unlike OLS, there is no general analytic formula for the optimal parameter estimates $\hat\beta$. Instead, we choose the parameters under which the data we observe would be most likely: we search for the parameters that maximize the \bgreen{likelihood}:\footnote{Maximum likelihood estimation has a close connection to Bayesian inference. See Supplement \ref{bayes}.}
+$$\overbrace{L\left(\vec\theta\mid \mathbf{X},\vec{y}\right)}^\text{Likelihood} = \overbrace{f_Y\left(\vec{y}\mid \mathbf{X}, \vec\theta\right)}^{\substack{\text{Probability density of}\\\text{data given parameters}}}$$
+We often assume \bgreen{conditional independence}, thereby allowing us to factor the likelihood.
+$$\begin{aligned}
+L\left(\vec\theta\mid \mathbf{X},\vec{y}\right) &= f_Y\left(\vec{y}\mid \mathbf{X}, \vec\theta\right) \\
+ &= f_Y\left(y_1\mid \vec{x}_1, \vec\theta\right)\times \dots\times f_Y\left(y_n\mid \vec{x}_n, \vec\theta\right) \\
+ &= \prod_{i=1}^n f_Y\left(y_i\mid \vec{x}_i, \vec\theta\right)
+\end{aligned}$$
+The log is a monotone transformation, so the argument $\vec\theta$ that maximizes the likelihood also maximizes the \bgreen{log likelihood}.
+$$\begin{aligned}
+\ell\left(\vec\theta\mid \mathbf{X},\vec{y}\right) &= \log L\left(\vec\theta\mid \mathbf{X},\vec{y}\right) \\
+&= \log \left(\prod_{i=1}^n f_Y\left(y_i\mid \vec{x}_i, \vec\theta\right)\right) \\
+&= \sum_{i=1}^n \log f_Y\left(y_i\mid \vec{x}_i, \vec\theta\right)
+\end{aligned}$$
+
+
+We can \bgreen{drop additive terms} that do not involve the parameters; the value of $\vec\theta$ that maximizes the likelihood remains unchanged.
+$$\begin{aligned}
+\ell\left(\vec\theta\mid \mathbf{X},\vec{y}\right) = \sum_{i=1}^n \log f_Y\left(y_i\mid \vec{x}_i, \vec\theta\right) = \sum_{i=1}^n \left(h_1\left(y_i,\vec{x}_i\right) + h_2\left(y_i,\vec{x}_i,\vec\theta\right) \right) {\color{olive}{\bm{\doteq}}} \sum_{i=1}^n h_2\left(y_i,\vec{x}_i,\vec\theta\right)
+\end{aligned}$$
+
+\section*{\bblue{Climbing the mountain}}
+
+The log likelihood is a mountain. Each point on the mountain is represented by coordinates that correspond to the parameter vector $\vec\theta$. We want to find the maximum likelihood estimate: the peak.
+
+We will assume temporarily that the mountain has only one dimension: $\vec\theta=\theta$ has just one element.
+
+The \bgreen{first derivative} $\frac{\partial}{\partial \theta}\ell\left(\theta\mid \mathbf{X},\vec{y}\right)$ captures the slope of the mountain. At the peak, the mountain is flat. We start by finding a candidate point $\theta^*$ at which the first derivative is 0.
+$$\theta^* = \theta\text{ such that }\frac{\partial}{\partial \theta}\ell\left(\theta\mid \mathbf{X},\vec{y}\right) = 0$$
+
+\begin{center}
+\begin{tikzpicture}
+% Score function
+\draw[olive, line width = 1.4pt, dashed, rotate = 35] (2.5,.1) -- (2.5,1.9); %(2,1.3) -- (0.5, 3);
+\draw[olive, line width = 1.4pt, dashed] (-.8,3) -- (.8,3); %(2,1.3) -- (0.5, 3);
+%\node[rotate = 305] at (2, 2.5) {$\frac{\partial}{\partial \theta}\ell(\theta\mid X,y)$};
+\node[olive, anchor = west] at (1.5, 3) {$\overbrace{\frac{\partial}{\partial \theta}\ell\left(\theta\mid \mathbf{X},\vec{y}\right)}^\text{Score function}$};
+% MLE
+\node[anchor = south] (mleLabel) at (0,3) {$\hat\theta_\text{MLE}$};
+\node[fill=none] (mle) at (0,3) {$\bullet$};
+% Curve
+\draw[line width = 1.3] plot [smooth,tension=1.5] coordinates {(-2,1) (mle.center) (2,1)};
+% Axes
+\draw[->, thick] (-3, 0) -- (-3, 4);
+\draw[->, thick] (-3, 0) -- (3, 0);
+\node at (0,-.5) {\Large $\theta$};
+\node[rotate=90] at (-3.5,2) {\small $\ell\left(\theta\mid \mathbf{X},\vec{y}\right)$};
+\end{tikzpicture}
+\end{center}
+
+If $\vec\theta$ has many elements, the first derivative is called the \bgreen{gradient} (denoted $\nabla$) and captures the slope along each coordinate. The gradient is also called the \bgreen{score function}.
+
+$$\nabla \ell\left(\vec\theta\mid \mathbf{X},\vec{y}\right) = \begin{bmatrix}
+\frac{\partial}{\partial \theta_1}\ell\left(\vec\theta\mid \mathbf{X},\vec{y}\right) \\ 
+\vdots \\ 
+\frac{\partial}{\partial \theta_p}\ell\left(\vec\theta\mid \mathbf{X},\vec{y}\right) 
+\end{bmatrix}$$
+
+In the multivariate case, a place where every element of the score vector is 0 is a candidate peak.
+
+A flat place could be a peak or a valley. To see whether we have found a maximum, we take the \bgreen{second derivative} and evaluate it at our candidate $\theta^*$. It tells us the direction of the curvature.
+
+\begin{center}
+\begin{tikzpicture}[x = .25\textwidth, y = 1cm]
+\node (explanation) at (0,3) {\footnotesize Read ``evaluated at $\theta = \theta^*$''};
+\draw[->, thick, olive] (explanation.west) to[bend right] (-.85,2.3);
+\draw[->, thick, olive] (explanation.east) to[bend left] (1.07,2.4);
+\node (negative) at (-1,2) {$\bigg(\frac{\partial^2}{\partial \theta^2}\ell(\theta\mid X,y)\bigg\rvert_{\theta = \theta^*}\bigg) < 0$};
+\node (positive) at (1,2) {$\bigg(\frac{\partial^2}{\partial \theta^2}\ell(\theta\mid X,y)\bigg\rvert_{\theta = \theta^*}\bigg) > 0$};
+\draw[->, olive, line width = 2pt] (-1,1.6) -- (-1, 1);
+\draw[->, olive, line width = 2pt] (1,1.6) -- (1, 1);
+\draw[thick] (-1.2,.5) to[bend left = 45] (-.8, .5);
+\draw[thick] (1.2,.7) to[bend left = 45] (.8, .7);
+\node at (-1,0) {Maximum};
+\node at (1,0) {Minimum};
+\end{tikzpicture}
+\end{center}
+
+If the first derivative is 0 and the second derivative is negative, then $\theta^*$ is our \bgreen{maximum likelihood estimate} $\hat\theta_\text{MLE}$.\footnote{Technical note: In GLMs, the objective function is convex so there is no risk of a local maximum; there is only one maximum. In more complex models you may worry whether your maximum is a global maximum.}
+
+When $\vec\theta$ has many dimensions, we get a matrix of second derivatives called the \bgreen{Hessian}.
+
+$$H = \nabla \nabla^T \ell\left(\vec{\theta}\mid \mathbf{X},\vec{y}\right) = \begin{bmatrix}
+\frac{\partial^2}{\partial \theta_1^2}\ell\left(\vec{\theta}\mid \mathbf{X},\vec{y}\right) & 
+	\frac{\partial}{\partial \theta_1}\frac{\partial}{\partial \theta_2}\ell\left(\vec{\theta}\mid \mathbf{X},\vec{y}\right) & 
+	\cdots & 
+	\frac{\partial}{\partial \theta_1}\frac{\partial}{\partial \theta_p}\ell\left(\vec{\theta}\mid \mathbf{X},\vec{y}\right) \\ 
+\frac{\partial}{\partial \theta_1}\frac{\partial}{\partial \theta_2}\ell\left(\vec{\theta}\mid \mathbf{X},\vec{y}\right) &
+	\frac{\partial^2}{\partial \theta_2^2}\ell\left(\vec{\theta}\mid \mathbf{X},\vec{y}\right) &
+	\cdots &
+	\frac{\partial}{\partial \theta_2}\frac{\partial}{\partial \theta_p}\ell\left(\vec{\theta}\mid \mathbf{X},\vec{y}\right) \\
+\vdots & \vdots & \ddots & \vdots \\
+\frac{\partial}{\partial \theta_1}\frac{\partial}{\partial \theta_p}\ell\left(\vec{\theta}\mid \mathbf{X},\vec{y}\right) &
+	\frac{\partial}{\partial \theta_2}\frac{\partial}{\partial \theta_p}\ell\left(\vec{\theta}\mid \mathbf{X},\vec{y}\right) &
+	\cdots &
+	 \frac{\partial^2}{\partial \theta_p^2}\ell\left(\vec{\theta}\mid \mathbf{X},\vec{y}\right) \\ 
+\end{bmatrix}$$
+
+\section*{\bblue{Variance of $\hat\theta_\text{MLE}$}}
+
+The variance of the MLE estimator relates to the amount of curvature at the peak: the Hessian.
+
+Heuristically, a very negative Hessian at the MLE (the peak) suggests that the score changes quickly from positive to negative near the MLE. This suggests we are quite sure of the MLE estimate.
+
+The negative Hessian is called the \bgreen{Fisher information}. When the Hessian is very negative, this indicates the score changes quickly from positive to negative near the MLE, so we are quite certain of our estimate. Correspondingly, a large positive Fisher information implies more information and thus more certainty about our estimate.
+
+The \bgreen{variance of the MLE estimate} is the inverse of the Fisher information:
+$$\V\left(\hat\theta_{\text{MLE}}\right) = \bigg(\mathcal{I}_n(\theta)\bigg)^{-1}\bigg\rvert_{\theta = \theta_\text{MLE}}$$
+In practice, we don't know the true $\theta$, so we estimate the variance by evaluating the inverse Fisher information at our MLE estimate. This is sometimes called the observed Fisher information.
+$$\hat\V\left(\hat\theta_{\text{MLE}}\right) = \bigg(\mathcal{I}_n(\theta)\bigg)^{-1}\bigg\rvert_{\theta = \hat\theta_\text{MLE}}$$
+
+\bgreen{Remember:} Sharper peak $\rightarrow$ more negative Hessian $\rightarrow$ more positive Fisher information $\rightarrow$ lower variance estimate
+
+For more details on inference on MLE theory, we recommend \citet{casella2002}.
+
+\section*{\bblue{Reporting results}}
+
+The parameters $\vec\theta$ are rarely of interest; regression coefficients are always difficult to interpret. Instead, you should always report \bgreen{quantities of interest} that clearly summarize your finding.\footnote{This strategy was originally advocated by \citet{king2000}. Some functions to fit common GLMs are available in the \texttt{Zelig} package in \texttt{R} \citep{imai2008,choirat2017}.} These might include predicted probabilities, first differences, the average treatment effect, etc.
+
+The entire process can be summarized in a few simple steps:
+\begin{enumerate}
+\item \bgreen{Fit a model}. Assume a model, write the log likelihood, and estimate $\hat\theta_\text{MLE}$ and the Hessian.
+\item \bgreen{Simulate estimation uncertainty}. We are uncertain about the true MLE $\vec\theta$. We want to incorporate this uncertainty in our estimate. We approximate the sampling distribution of $\hat{\vec\theta}_\text{MLE}$ with thousands of draws from a multivariate normal distribution.\footnote{It is important that all parameters are simulated together $\left(\tilde{\vec\theta}\text{ includes both }\tilde{\vec\beta}\text{ and }\tilde\gamma\right)$.}\footnote{The log likelihood is asymptotically normal. The proof invokes the Central Limit Theorem and the fact that the log likelihood is a sum of independent quantities. Draws from the likelihood are the likelihoodist analog of draws from the posterior distribution in Bayesian inference. For more on the likelihood theory of inference, see \citet{king1998}.}
+$$\tilde\theta \sim N\left(\hat{\vec\theta}_\text{MLE},\underbrace{\hat\V\left(\hat{\vec\theta}_\text{MLE}\right)}_\text{Variance-covariance matrix}\right)$$
+\item \bgreen{Calculate the linear predictor} for each observation for each draw. Depending on you quantity of interest, you may want to change the $\vec{X}_i$ values of some observations so that the observations you compare are informative for your theory. $$\left\{\tilde\eta_i = \vec{X}_i\tilde{\vec\beta}\right\}_{i=1}^n$$
+\item Transform by the \bgreen{inverse link function}. $\left\{\tilde\mu_i = g^{-1}\left(\tilde\eta_i\right)\right\}_{i=1}^n$
+\begin{itemize}
+\item The link function is $g(\mu_i) = \vec{X}_i\vec\beta$. The inverse link function does the reverse: $\mu_i = g^{-1}\left(\vec{X}_i{\vec\beta}\right)$.
+\end{itemize}
+\item \bgreen{Simulate fundamental uncertainty}. Even if we knew the true $\vec\theta$, a component would remain that is fundamentally stochastic. Draw from the distribution of $Y$ to simulate this.
+$$\left\{\tilde{Y}_i \sim f_Y\left(\tilde\mu_i,\tilde\gamma\right)\right\}_{i=1}^n$$
+\item \bgreen{Calculate your quantity of interest}. This is the thing you want to report to your readers.
+$$\tilde\tau = \overbrace{h\left(\tilde{Y}_1,\dots,\tilde{Y}_n\right)}^{\substack{\text{Any quantity you}\\\text{want to report}}}$$
+\item \bgreen{Repeat} steps 2-6 thousands of times.
+\item \bgreen{Summarize} the resulting distribution of the $\tilde\tau$ samples in a clear, informative graph. 
+\end{enumerate}
+
+\begin{sidewaystable}[!htbp]
+\small
+\centering
+\begin{tabular}{lcccccc}
+ & & Unknown & Linear \\
+Model & Response type & parameters & predictor & = & Link function $g$ & Stochastic component \\
+\hline
+
+OLS & 
+	Normal & 
+	$\vec\theta=\left\{\vec\beta,\gamma\right\}$ & 
+	$\vec{X}_i\vec\beta=\eta_i$ & 
+	= &
+	$g(\mu_i) = \mu_i$ & 
+	$Y_i \sim \text{Normal}(\mu_i,\sigma^2 = \gamma)$ \\
+
+Logit & 
+	Binary & 
+	$\vec\theta=\vec\beta$ & 
+	$\vec{X}_i\vec\beta=\eta_i$ & 
+	= &
+	$g(\mu_i) = \logit(\mu_i) = \log\left(\frac{\mu_i}{1-\mu_i}\right)$ & 
+	$f_Y(\mu_i) = \text{Bernoulli}(\pi_i = \mu_i)$ \\
+
+Probit & 
+	Binary & 
+	$\vec\theta=\vec\beta$ & 
+	$\vec{X}_i\vec\beta=\eta_i$ & 
+	= &
+	$g^*(\mu_i) = \text{probit}(\mu_i) = \Phi^{-1}(\mu_i)$ & 
+	$Y_i \sim \text{Bernoulli}(\pi_i = \mu_i)$ \\
+	
+Complementary log-log & 
+	Binary & 
+	$\vec\theta=\vec\beta$ & 
+	$\vec{X}_i\vec\beta=\eta_i$ & 
+	= &
+	$g^*(\mu_i) = \log(-\log(1-\mu_i)) $ & 
+	$Y_i \sim \text{Bernoulli}(\pi_i = \mu_i)$ \\
+	
+Poisson & 
+	Count & 
+	$\vec\theta=\vec\beta$ & 
+	$\vec{X}_i\vec\beta=\eta_i$ & 
+	= &
+	$g(\mu_i) = \log(\mu_i)$ & 
+	$Y_i \sim \text{Poisson}(\lambda_i = \mu_i)$ \\
+
+Neg. Binomial & 
+	Count & $\vec\theta=\left\{\vec\beta,\gamma\right\}$ & 
+	$\vec{X}_i\vec\beta=\eta_i$ & 
+	= &
+	$g^*(\mu_i) = \log(\mu_i)$ & 
+	$Y_i \sim \text{NegBin}\left(\gamma, \pi_i = \frac{\mu_i}{\gamma + \mu_i}\right)$ \\
+
+Exponential & 
+	Duration & 
+	$\vec\theta=\vec\beta$ & 
+	$\vec{X}_i\vec\beta=\eta_i$ & 
+	= &
+	$g^*(\mu_i) = \log\left(\frac{1}{\mu_i}\right) = \log\left(\lambda_i\right)$ & 
+	$Y_i \sim \text{Exponential}\left(\lambda_i = \frac{1}{\mu_i}\right)$ \\
+	
+	& & & & & $g(\mu_i) = \frac{1}{\mu_i} = \lambda_i$ \\
+
+% Weibull and Gompertz could be added
+
+Gamma & 
+	Duration & 
+	$\vec\theta=\left\{\vec\beta,\gamma\right\}$ & 
+	$\vec{X}_i\vec\beta=\eta_i$ & 
+	= &
+	$g^*(\mu_i) = \log\left(\frac{1}{\mu_i}\right) = \log\left(\lambda_i\right)$ & 
+	$Y_i \sim \text{Gamma}\left(\alpha = \gamma, \lambda_i = \frac{\gamma}{\mu_i}\right)$ \\
+	
+	& & & & & $g(\mu_i) = \frac{1}{\mu_i} = \lambda_i$ \\
+	
+Multinomial logit &
+	Categorical & 
+	$\bm{\theta}=\bm\beta=\left[\vec\beta_2 \cdots \vec\beta_k\right]$ &
+	$\vec{X_i}\bm{\beta} = \vec\eta_i$ & 
+	= &
+	$g(\vec\mu_i) = \log\left(\frac{\vec{\mu}_i}{1 - \vec\mu_i^T\vec{1}}\right)$ &
+	$Y_i \sim \text{Multinomial}\left(\vec\pi_i = \begin{bmatrix} 1 - \vec\mu_i^T \vec{1} \\ \vec\mu_i\end{bmatrix}\right)$ \\
+
+%Multinomial probit could be added
+	
+%Ordered logit could be added
+	
+%Ordered probit could be added
+	
+\hline
+\end{tabular}
+\caption{Common generalized linear models (GLMs). List is not exhaustive. Alternative parameterizations and link functions exist; these were chosen to maximize consistency of notation within the table. Link functions denoted $g^*$ are not the canonical link for the given response type (see Supplement \ref{exponentialFamily}). There are various reasons to choose a non-canonical link in some cases; one such reason is that the inverse of the canonical link $g^{-1}(\eta_i) = \mu_i$ does not always map all possible values of $\eta_i$ (the real line) into the support of $\mu_i$.}
+\label{tbl:GLMs}
+\end{sidewaystable}
+
+\newpage
+\appendix
+
+\section{Exponential family}
+\label{exponentialFamily}
+The distributions used in generalized linear models all come from the \bgreen{exponential family}. \\ The probability density function of each distribution can be written in the following form:
+$$f(y\mid \vec\theta) = \overbrace{h(y)}^{\substack{\text{Normalizing}\\\text{constant}}} \exp\bigg(\overbrace{{\vec\theta}^T}^{\substack{\text{Natural}\\\text{parameter}}}\overbrace{\vec\phi(y)}^{\substack{\text{Sufficient}\\\text{statistics}}} - \overbrace{A\left(\vec\theta\right)}^{\substack{\text{Cumulant}\\\text{function}}}\bigg)$$
+\bgreen{Ex.} For the Bernoulli,
+$$\begin{aligned}
+P(y\mid p) &= \pi^y(1-\pi)^{1-y} \\
+&= \exp\bigg(\log\left(\pi^y(1-\pi)^{1-y}\right)\bigg) \\
+&= \exp\bigg(y\log(\pi) + (1 - y)\log(1 - \pi)\bigg) \\
+&= \exp\bigg(\underbrace{y}_{=\phi(y)}\underbrace{\log\left(\frac{\pi}{1-\pi}\right)}_{=\theta} + \underbrace{\log(1 - \pi)}_{=\log(1 - \logit^{-1}[\theta]) = -A(\theta)}\bigg)
+\end{aligned}$$
+The \bgreen{canonical link function} is the one that transforms the mean of the distribution to the natural parameter $\theta$. In this case, the canonical link function is $g(\pi) = \log\left(\frac{\pi}{1-\pi}\right) = \logit(\pi)$. This is why the logit is popular!
+
+The exponential family is nice because:
+\begin{enumerate}
+\item Sufficient statistics $\vec\phi(y)$ are finite in dimension even in an infinite sample. To calculate the MLE, you only need the sufficient statistics and not actually all of the data. Information is compressed.
+\item Conjugate priors exist for Bayesian inference.
+\item The exponential family has maximum entropy (most diffuse) among distributions subject to some moment constraints.
+\item The mean has a known formula: $\E(Y) = \nabla A(\theta)$. For the Bernoulli example, 
+$$\begin{aligned}
+\E(Y) &= \nabla A(\theta) \\
+&= \frac{\partial}{\partial \theta} \bigg[-\log(1 - \logit^{-1}[\theta])\bigg] \\
+&= \frac{\partial}{\partial \theta} \bigg[-\log\left(\frac{1}{1 + e^{\theta}}\right)\bigg] \\
+&= -\bigg(\left(1 + e^{\theta}\right)\left(-e^\theta \left[1 + e^\theta\right]^{-2}\right)\bigg) \\
+&= \left(\frac{e^\theta}{1 + e^\theta}\right) \\
+&= \pi
+\end{aligned}$$
+\item The variance has a known formula: $\V(Y) = \nabla \nabla^T A(\theta)$. For the Bernoulli example,
+$$\begin{aligned}
+\V(Y) &= \nabla \nabla^T A(\theta) \\
+&= \frac{\partial^2}{\partial^2 \theta} \bigg[-\log(1 - \logit^{-1}[\theta])\bigg] \\
+&= \frac{\partial}{\partial \theta} \left(\frac{e^\theta}{1 + e^\theta}\right) \\
+&= \frac{e^\theta}{\left(1 + e^\theta\right)^2} \\
+&= \left(\frac{e^\theta}{1 + e^\theta}\right)\left(\frac{1}{1 + e^\theta}\right) \\
+&= \pi(1 - \pi)
+\end{aligned}$$
+\end{enumerate}
+
+For more complex distributions, having a known function for the mean and variance is nice! For more on the exponential family, we recommend \citet{murphy2012} Ch. 9. A Bayesian technique called \bgreen{variational inference} approximates distributions with the closest possible match among the exponential family (see \citealt{murphy2012} Ch. 21). There are also many fun connections between the distributions within the exponential family; for this we recommend \citet{blitzstein2014}.
+
+\section{Connection to Bayesian inference}
+\label{bayes}
+We will not cover Bayesian inference in this class. In this class, the unknown parameters ($\beta$) are treated as fixed constants. In Bayesian inference, the unknown parameters are treated as random variables. In this case, 
+$$P(\vec\theta\mid \vec{y}) = \frac{\overbrace{P(\vec{y}\mid \vec\theta)}^\text{Likelihood}\overbrace{P(\vec\theta)}^\text{Prior}}{\underbrace{P(\vec{y})}_\text{Normalizing constant}}$$
+Because the normalizing constant does not involve the unknown parameters $\theta$, we can ignore it. Maximizing the likelihood thus agrees with finding the coefficients that maximize the posterior distribution under a flat prior (a prior $P(\theta)$ that takes the same value at all values $\theta$). A ``flat prior'' is a bit of a misnomer, though, as it is not generally flat under transformations of the parameters. Further, we usually have some prior knowledge that can improve efficiency and estimation by avoiding parameter values that are highly implausible. For those interested in Bayesian inference, we recommend \citet{gelman2014}.
+
+\bibliography{GLM_handout}
+
+
+\end{document}

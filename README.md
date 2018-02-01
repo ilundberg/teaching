@@ -1,2 +1,2 @@
 # teaching
-Teaching materials
+I post teaching materials in this repository, including finished PDFs and source code. If you are reading this, feel free to download and use them. If you find an error, let me know so the files will improve!
