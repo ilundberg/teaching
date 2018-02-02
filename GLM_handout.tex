@@ -169,9 +169,7 @@ $$H = \nabla \nabla^T \ell\left(\vec{\theta}\mid \mathbf{X},\vec{y}\right) = \be
 
 The variance of the MLE estimator relates to the amount of curvature at the peak: the Hessian.
 
-Heuristically, a very negative Hessian at the MLE (the peak) suggests that the score changes quickly from positive to negative near the MLE. This suggests we are quite sure of the MLE estimate.
-
-The negative Hessian is called the \bgreen{Fisher information}. When the Hessian is very negative, this indicates the score changes quickly from positive to negative near the MLE, so we are quite certain of our estimate. Correspondingly, a large positive Fisher information implies more information and thus more certainty about our estimate.
+Heuristically, a very negative Hessian at the MLE (the peak) suggests that the score changes quickly from positive to negative near the MLE; we have a lot of information about the MLE. For this reason, the negative Hessian is called the \bgreen{Fisher information}.
 
 The \bgreen{variance of the MLE estimate} is the inverse of the Fisher information:
 $$\V\left(\hat\theta_{\text{MLE}}\right) = \bigg(\mathcal{I}_n(\theta)\bigg)^{-1}\bigg\rvert_{\theta = \theta_\text{MLE}}$$
