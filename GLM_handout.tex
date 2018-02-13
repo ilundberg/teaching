@@ -29,6 +29,7 @@
 \newcommand{\N}{\mathcal{N}}
 \newcommand{\I}{\text{I}}
 \newcommand{\Cov}{\text{Cov}}
+\renewcommand{\P}{\text{P}}
 \newcommand{\Cor}{\text{Cor}}
 \newcommand{\logit}{\text{logit}}
 \newcommand{\iid}{\stackrel{\text{iid}}{\sim}}
@@ -344,9 +345,49 @@ For more complex distributions, having a known function for the mean and varianc
 
 \section{Connection to Bayesian inference}
 \label{bayes}
-We will not cover Bayesian inference in this class. In this class, the unknown parameters ($\beta$) are treated as fixed constants. In Bayesian inference, the unknown parameters are treated as random variables. In this case, 
+We will not cover Bayesian inference in this class. In this class, the unknown parameters ($\beta$) are treated as fixed constants. In Bayesian inference, the unknown parameters are treated as random variables.
 $$P(\vec\theta\mid \vec{y}) = \frac{\overbrace{P(\vec{y}\mid \vec\theta)}^\text{Likelihood}\overbrace{P(\vec\theta)}^\text{Prior}}{\underbrace{P(\vec{y})}_\text{Normalizing constant}}$$
-Because the normalizing constant does not involve the unknown parameters $\theta$, we can ignore it. Maximizing the likelihood thus agrees with finding the coefficients that maximize the posterior distribution under a flat prior (a prior $P(\theta)$ that takes the same value at all values $\theta$). A ``flat prior'' is a bit of a misnomer, though, as it is not generally flat under transformations of the parameters. Further, we usually have some prior knowledge that can improve efficiency and estimation by avoiding parameter values that are highly implausible. For those interested in Bayesian inference, we recommend \citet{gelman2014}.
+Because the normalizing constant does not involve the unknown parameters $\theta$, we can ignore it. The two key components in Bayesian inference are the \bgreen{prior distribution} on the unknown parameters and the \bgreen{likelihood}. What you learn about likelihood in this course will prepare you to jump into Bayesian inference in the future.
+
+As an example of Bayesian inference, consider Bernoulli draws for which we assume a $\text{Beta}(\alpha,\beta)$ prior on the probability of success $\pi$. This corresponds to our beliefs about the distribution of $\pi$ before seeing the data.
+$$\begin{aligned}
+\pi &\sim \text{Beta}(\alpha,\beta) \\
+Y_i &\stackrel{\text{iid}}{\sim} \text{Bernoulli}(\pi_i)
+\end{aligned}$$
+Bayesian inference produces a \bgreen{posterior distribution} that summarizes our updated beliefs given the data. In the Bernoulli case, the Beta distribution is a \bgreen{conjugate prior} because the posterior will also follow a Bernoulli distribution.
+$$\begin{aligned}
+\underbrace{f(\pi\mid \vec{y})}_\text{Posterior} &\propto \underbrace{f(\pi)}_\text{Prior} \underbrace{\P(\vec{y}\mid \pi)}_\text{Likelihood} \\
+&\propto \pi^\alpha(1-\pi)^\beta \prod_{i=1}^n \pi^{y_i}(1-\pi)^{1-y_i} \\
+&= \pi^{\alpha + \sum_{i=1}^n y_i}(1-\pi)^{\beta + n - \sum_{i=1}^n y_i} \\
+&\propto \text{Beta}\left(\alpha + \sum_{i=1}^n y_i,\beta + n - \sum_{i=1}^n y_i\right)
+\end{aligned}$$
+We often summarize the posterior distribution by the \bgreen{posterior mean}.
+$$\hat\pi_\text{Posterior Mean} = \E\left[\pi\mid \vec{y}\right] = \E\left[\text{Beta}\left(\alpha + \sum_{i=1}^n y_i,\beta + n - \sum_{i=1}^n y_i\right)\right] = \frac{\alpha + \sum_{i=1}^n y_i}{\alpha + \beta + n}$$
+Rearranging terms, we can express the posterior mean as a weighted average of the prior mean and the MLE estimate. As the $n\rightarrow\infty$, the data overwhelm the prior and the posterior mean will converge to the true value. The posterior mean is therefore biased but consistent.
+$$\hat\pi_\text{Posterior Mean} = \underbrace{\frac{\alpha}{\alpha + \beta}}_\text{Prior mean}\underbrace{\left(\frac{\alpha + \beta}{\alpha + \beta + n}\right)}_\text{Weight on prior} + \underbrace{\frac{\sum_{i=1}^n y_i}{n}}_{\hat\pi_\text{MLE}}\underbrace{\left(\frac{n}{\alpha + \beta + n}\right)}_\text{Weight on likelihood}$$
+We can often \bgreen{re-interpret frequentist results} as Bayesian results with a particular prior. In the case of the Bernoulli, the posterior mean converges to the frequentist $\hat\pi_\text{MLE}$ in the limit as $\alpha$ and $\beta$ go to 0.
+$$\lim_{\{\alpha,\beta\}\rightarrow 0^+} \hat\pi_\text{Posterior Mean} = \lim_{\{\alpha,\beta\}\rightarrow 0^+} \frac{\alpha + \sum_{i=1}^n y_i}{\alpha + \beta + n} = \frac{\sum_{i=1}^n y_i}{n}  = \hat\pi_\text{MLE}$$
+What would that prior look like? To build intuition for the above, we can interpret a $\text{Beta}(\alpha,\beta)$ prior in terms of \bgreen{pseudocounts}. The posterior mean is the same as what a frequentist would conclude if $\alpha$ successes and $\beta$ failures were added to the observed data. As the pseudocounts go to 0, the prior becomes more and more diffuse (see Fig. \ref{fig:beta}). The limit as the pseudocounts go to 0 corresponds to high prior probabilities on parameters near 0 and 1 and negligible prior probability in the middle of the region; this is the prior effectively assumed by the MLE procedure.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width = .5\textwidth]{figures/beta}
+\caption{Beta distribution probability density function. Lighter green indicates a more diffuse prior that can be interpreted as having fewer pseudocounts before seeing the data.}
+\label{fig:beta}
+\end{figure}
+
+Because we often have some knowledge of $\pi$ before seeing the data, it is often helpful to assume a weakly informative prior, which will bias results toward the prior but improve efficiency. Researchers often mistakenly state that they have chosen a ``non-informative'' or ``flat'' prior. In our example, for instance, you might place a Beta(1,1) or uniform prior on $\pi$. This would be a reasonable choice, but it would not be flat if you reparameterized to focus on $\gamma = \pi^2$. Under this reparameterization, a uniform prior on $\pi$ would correspond to much greater prior probabilities on $\gamma$ near 0 than $\gamma$ near 1. Because priors can be sensitive to parameterization, one should be cautious in claiming that any prior is flat.
+
+To avoid this problem, a common diffuse prior distribution is the \bgreen{Jeffreys prior}
+$$f(\theta)\propto\sqrt{\underbrace{\left\lvert\mathcal{I}\left(\vec\theta\right)\right\rvert}_{\substack{\text{Determinant of}\\\text{Fisher information}}}}$$
+The Jeffreys prior is invariant to reparameterizations of $\theta$ because the parameterization of $\theta$ is taken into account in the Fisher information. In the Bernoulli example, the Jeffreys prior is a $\text{Beta}\left(\frac{1}{2},\frac{1}{2}\right)$. The Jeffreys prior is still informative, however: the posterior mean in this case is biased toward $\frac{1}{2}$.
+
+$$\hat\pi_\text{Posterior Mean} = 
+	\E\left[\text{Beta}\left(\frac{1}{2}+ \sum_{i=1}^n y_i,\frac{1}{2} + n - \sum_{i=1}^n y_i\right)\right] = 
+	\underbrace{\left(\frac{1}{2}\right)}_{\substack{\text{Prior}\\\text{mean}}}\left(\frac{1}{1+n}\right) + 
+		\underbrace{\left(\frac{\sum_{i=1}^n y_i}{n}\right)}_{\hat\pi_\text{MLE}}\left(\frac{n}{1 + n}\right)$$
+		
+Rather than arguing about the choice of a flat prior, it may be wiser to choose a ``weakly informative'' prior which gains efficiency by placing lower probability on highly improbable regions of the parameter space \citep{gelman2008}. We chose a conjugate prior in this example so that the math would be nice, but one can use Markov Chain Monte Carlo (MCMC) methods to sample from the posterior distribution even when it does not have an analytical solution (see \citealt{brooks2011} and \citealt{robert2010} for introductions). MCMC represents one of the foremost computational breakthroughs in statistics in recent decades, and new methods for sampling from the posterior are continually being developed (i.e. \citealt{carpenter2017}). Bayesian methods are likely to become even more accessible to applied researchers in the future as computation improves. For those interested in Bayesian inference, we recommend \citet{hoff2009} and \citet{gelman2014}.
 
 \bibliography{GLM_handout}
 
