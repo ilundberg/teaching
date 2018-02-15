@@ -64,30 +64,32 @@ $$
 \overbrace{Y_i \sim f_Y(\mu_i,\gamma)}^\text{\bgreen{Stochastic component}}
 $$
 
-GLMs are defined for data generated from distributions $f_Y$ in the \bgreen{exponential family} (see Supplement \ref{exponentialFamily}). We use $\vec\theta$ to denote the full set of parameters to be estimated, which include coefficients $\vec\beta$ and, if relevant, a parameter $\gamma$ related to the variance. Table \ref{tbl:GLMs} provides examples of GLMs.
+GLMs are defined for data generated from distributions $f_Y$ in the \bgreen{exponential family} (see Supplement A). We use $\vec\theta$ to denote the full set of parameters to be estimated, which include coefficients $\vec\beta$ and, if relevant, a parameter $\gamma$ related to the variance. Table \ref{tbl:GLMs} provides examples of GLMs.
 
 \section*{\bblue{Maximum likelihood}}
 
-Unlike OLS, there is no general analytic formula for the optimal parameter estimates $\hat\beta$. Instead, we choose the parameters under which the data we observe would be most likely: we search for the parameters that maximize the \bgreen{likelihood}:\footnote{Maximum likelihood estimation has a close connection to Bayesian inference. See Supplement \ref{bayes}.}
+Unlike OLS, there is no general analytic formula for the optimal parameter estimates $\hat\beta$. Instead, we choose the parameters under which the data we observe would be most likely: we search for the parameters that maximize the \bgreen{likelihood}:\footnote{Maximum likelihood estimation has a close connection to Bayesian inference. See Supplement B.}
 $$\overbrace{L\left(\vec\theta\mid \mathbf{X},\vec{y}\right)}^\text{Likelihood} = \overbrace{f_Y\left(\vec{y}\mid \mathbf{X}, \vec\theta\right)}^{\substack{\text{Probability density of}\\\text{data given parameters}}}$$
 We often assume \bgreen{conditional independence}, thereby allowing us to factor the likelihood.
 $$\begin{aligned}
-L\left(\vec\theta\mid \mathbf{X},\vec{y}\right) &= f_Y\left(\vec{y}\mid \mathbf{X}, \vec\theta\right) \\
- &= f_Y\left(y_1\mid \vec{x}_1, \vec\theta\right)\times \dots\times f_Y\left(y_n\mid \vec{x}_n, \vec\theta\right) \\
- &= \prod_{i=1}^n f_Y\left(y_i\mid \vec{x}_i, \vec\theta\right)
+L\left(\vec\theta\mid \mathbf{X},\vec{y}\right) &= f_Y\left(\vec{y}\mid \mathbf{X}, \vec\theta\right)
+= f_Y\left(y_1\mid \vec{x}_1, \vec\theta\right)\times \dots\times f_Y\left(y_n\mid \vec{x}_n, \vec\theta\right)
+= \prod_{i=1}^n f_Y\left(y_i\mid \vec{x}_i, \vec\theta\right)
 \end{aligned}$$
-The log is a monotone transformation, so the argument $\vec\theta$ that maximizes the likelihood also maximizes the \bgreen{log likelihood}.
+Often, the likelihood factors. We can \bgreen{drop terms} that do not involve the parameters $\vec\theta$ to produce a function proportional to the likelihood; the value of $\vec\theta$ that maximizes the likelihood remains unchanged.
 $$\begin{aligned}
-\ell\left(\vec\theta\mid \mathbf{X},\vec{y}\right) &= \log L\left(\vec\theta\mid \mathbf{X},\vec{y}\right) \\
-&= \log \left(\prod_{i=1}^n f_Y\left(y_i\mid \vec{x}_i, \vec\theta\right)\right) \\
-&= \sum_{i=1}^n \log f_Y\left(y_i\mid \vec{x}_i, \vec\theta\right)
+L\left(\vec\theta\mid \mathbf{X},\vec{y}\right) &= \prod_{i=1}^n f_Y\left(y_i\mid \vec{x}_i, \vec\theta\right) 
+= \prod_{i=1}^n h_1\left(y_i,\vec{x}_i\right)h_2\left(y_i, \vec{x}_i,\vec\theta\right) 
+\propto \prod_{i=1}^n h_2\left(y_i, \vec{x}_i,\vec\theta\right)
 \end{aligned}$$
-
-
-We can \bgreen{drop additive terms} that do not involve the parameters; the value of $\vec\theta$ that maximizes the likelihood remains unchanged.
+The log is a monotone function, so the argument $\vec\theta$ that maximizes $L$ also maximizes the \bgreen{log likelihood}.
 $$\begin{aligned}
-\ell\left(\vec\theta\mid \mathbf{X},\vec{y}\right) = \sum_{i=1}^n \log f_Y\left(y_i\mid \vec{x}_i, \vec\theta\right) = \sum_{i=1}^n \left(h_1\left(y_i,\vec{x}_i\right) + h_2\left(y_i,\vec{x}_i,\vec\theta\right) \right) {\color{olive}{\bm{\doteq}}} \sum_{i=1}^n h_2\left(y_i,\vec{x}_i,\vec\theta\right)
+\ell\left(\vec\theta\mid \mathbf{X},\vec{y}\right) &= \log L\left(\vec\theta\mid \mathbf{X},\vec{y}\right) 
+= \log \left(\prod_{i=1}^n f_Y\left(y_i\mid \vec{x}_i, \vec\theta\right)\right) 
+= \sum_{i=1}^n \log f_Y\left(y_i\mid \vec{x}_i, \vec\theta\right)
+= \sum_{i=1}^n\log h_2\left(y_i, \vec{x}_i, \vec\theta\right) + c
 \end{aligned}$$
+where the constant $c = \sum_{i=1}^n h_1\left(y_i,\vec{x}_i\right)$ can be ignored.
 
 \section*{\bblue{Climbing the mountain}}
 
@@ -150,7 +152,7 @@ If the first derivative is 0 and the second derivative is negative, then $\theta
 
 When $\vec\theta$ has many dimensions, we get a matrix of second derivatives called the \bgreen{Hessian}.
 
-$$H = \nabla \nabla^T \ell\left(\vec{\theta}\mid \mathbf{X},\vec{y}\right) = \begin{bmatrix}
+$$H = \nabla \nabla^T \ell\left(\vec{\theta}\mid \mathbf{X},\vec{y}\right) = \begin{small}\begin{bmatrix}
 \frac{\partial^2}{\partial \theta_1^2}\ell\left(\vec{\theta}\mid \mathbf{X},\vec{y}\right) & 
 	\frac{\partial}{\partial \theta_1}\frac{\partial}{\partial \theta_2}\ell\left(\vec{\theta}\mid \mathbf{X},\vec{y}\right) & 
 	\cdots & 
@@ -164,7 +166,7 @@ $$H = \nabla \nabla^T \ell\left(\vec{\theta}\mid \mathbf{X},\vec{y}\right) = \be
 	\frac{\partial}{\partial \theta_2}\frac{\partial}{\partial \theta_p}\ell\left(\vec{\theta}\mid \mathbf{X},\vec{y}\right) &
 	\cdots &
 	 \frac{\partial^2}{\partial \theta_p^2}\ell\left(\vec{\theta}\mid \mathbf{X},\vec{y}\right) \\ 
-\end{bmatrix}$$
+\end{bmatrix}\end{small}$$
 
 \section*{\bblue{Variance of $\hat\theta_\text{MLE}$}}
 
@@ -179,7 +181,128 @@ $$\hat\V\left(\hat\theta_{\text{MLE}}\right) = \bigg(\mathcal{I}_n(\theta)\bigg)
 
 \bgreen{Remember:} Sharper peak $\rightarrow$ more negative Hessian $\rightarrow$ more positive Fisher information $\rightarrow$ lower variance estimate
 
-For more details on inference on MLE theory, we recommend \citet{casella2002}.
+\section*{\bblue{Properties of the MLE\footnote{For more details on inference on MLE theory, we recommend \citet{casella2002}. Invariance is Thm. 7.2.10, consistency is Thm. 10.1.6, normality is Thm. 10.1.12, the CRLB is Thm. 7.3.9, and asymptotic efficiency is defined in Def. 10.1.11 and related to MLE in Thm. 10.1.12.}}}
+\begin{enumerate}
+\item \bgreen{Invariance}: If $\hat{\vec\theta}_\text{MLE}$ is the MLE for $\vec\theta$, then for any function $g(\vec\theta)$ the MLE of $g(\vec\theta)$ is $g(\hat{\vec\theta}_\text{MLE})$.
+\item \bgreen{Consistency:} The MLE is sometimes biased $\left(\E\left[\hat{\vec\theta}_\text{MLE}\right]\neq \vec\theta\right)$ but is always consistent: $\hat{\vec\theta}_\text{MLE}\stackrel{P}{\rightarrow}\vec\theta$.
+\item \bgreen{Asymptotic normality}: As $n\rightarrow\infty$, the sampling distribution of $\hat\theta_\text{MLE}$ converges to Normal.
+\vspace{-2ex}$$\sqrt{n}\left(\hat{\vec\theta} - \vec{\theta}\right) \stackrel{D}{\rightarrow} \text{Normal}\left(0,\left[\mathcal{I}_1(\theta)\right]^{-1}\right)$$ \vspace{-6ex}
+% Commenting this alternative version out because really \hat{\vec\theta} converges in probability to \theta,
+% so it's clearer to multiply by \sqrt{n} on the left and use the Fisher information from a single observation on the right.
+%$$\hat{\vec\theta} \stackrel{D}{\rightarrow} \text{Normal}\left(\theta,\V\left[\hat{\vec\theta}_\text{MLE}\right]\right)$$
+\item \bgreen{Efficiency:} The Cram\'{e}r-Rao lower bound states that any unbiased estimator for $\vec{\theta}$ has variance at least as great as $\left(\mathcal{I}_n(\theta)\right)^{-1}$, which is $\V\left(\hat{\vec\theta}_\text{MLE}\right)$. This means:
+\begin{itemize}
+\item If the MLE is unbiased, it is the most efficient (lowest variance) among unbiased estimators. However, the MLE is often biased.
+\item The MLE is asymptotically efficient: even biased MLEs asymptotically achieve the CRLB.
+\end{itemize}
+\end{enumerate}
+
+\newpage
+\section*{\bblue{Hypothesis testing\footnote{These tests can be generalized to the null hypothesis $H_0: h(\vec\theta\,) = \vec{c}$, where $h$ is a function that maps the vector $\vec\theta\in\mathbb{R}^p$ to a vector of constraints $c\in \mathbb{R}^k$. For an overview in this more general framework, see \citet{rao2005}. For a textbook treatment including a discussion of inverting the tests to produce confidence intervals, see \citet{agresti2015} Section 4.3.}}}
+Suppose we want to test the null hypothesis that a subset of the coefficients are zero.
+$$\vec\beta = \begin{bmatrix} \vec\beta_A \\ \vec\beta_B \end{bmatrix},\qquad H_0: \vec\beta = \vec\beta_0 \equiv \begin{bmatrix} \vec{0} \\ \vec\beta_B \end{bmatrix}$$
+There are three main methods for conducting this test. We will denote the number of elements in $\vec\theta_A$ by $k$, often using the $k=1$ case to build intuition. %Figure \ref{fig:tests} also builds intuition in the case of $k = 1$.
+
+%\begin{figure}[!ht]
+\begin{center}
+\begin{tikzpicture}
+% Score test
+\node[olive, font = \footnotesize,align = center] at (5, 2) {Score test depends\\on slope and\\curvature at $\theta_0$};
+\draw[olive, line width = 1.4pt, dashed, rotate = 49] (3.45,-2.2) -- (3.45,.2);
+\draw[->, thick, olive] (3.9,2) to[bend right] (3.2,2);
+% Wald test
+\node[purple, font = \footnotesize,align = center] at (0.2,1.5) {Wald test depends\\on curvature at\\$\hat\theta_\text{MLE}$ and distance\\from the null};
+\draw[->, thick, purple] (0,2.5) -- (0,3);
+\draw[->, thick, purple] (-.35,2.5) -- (-.55,2.9);
+\draw[->, thick, purple] (.35,2.5) -- (.55,2.9);
+\draw[-, thick, purple] (0,.3) -- (2.9,.3);
+\draw[-, thick, purple] (0,.2) -- (0,.4);
+\draw[-, thick, purple] (2.9,.2) -- (2.9,.4);
+\draw[->, thick, purple] (1.4,1) to[bend left] (1.6,.45);
+% Curve
+\draw[line width = 1.3] plot [smooth,tension=.7] coordinates {(-2,1) (-1.3,2.5) (0,3.2) (2,2.7) (4,1)};
+% MLE
+\node[anchor = south,font = \footnotesize] (mleLabel) at (0,3.2) {$\ell(\hat\theta_\text{MLE}\mid \mathbf{X},\vec{y})$};
+\node[fill=none,blue] (mle) at (0,3.2) {$\bullet$};
+% Null hypothesis
+\node[anchor = south,font = \footnotesize] (nullLabel) at (3,2.6) {$\ell(\theta_0\mid \mathbf{X},\vec{y})$};
+\node[fill=none,blue] (null) at (3,1.95) {$\bullet$};
+\draw[->, thick, blue] (nullLabel) -- (null);
+% Likelihood ratio test
+\node[blue, font = \footnotesize,align = center] at (6.5,3.5) {Likelihood ratio test depends\\on difference in log likelihoods};
+\draw[->, thick, blue] (4.2,3.5) to[bend right = 10] (mleLabel);
+\draw[->, thick, blue] (4.2,3.5) -- (nullLabel);
+% Axes
+\draw[->, thick] (-3, 0) -- (-3, 4);
+\draw[->, thick] (-3, 0) -- (5, 0);
+\node[anchor=north] at (0,0) {$\hat\theta_\text{MLE}$};
+\draw[-, thick] (0, -.1) -- (0, .1);
+\node[anchor=west] at (5,0) {$\theta$};
+\node[rotate=90] at (-3.5,2) {\small $\ell\left(\theta\mid \mathbf{X},\vec{y}\right)$};
+\node[anchor=north] at (3,0) {$\theta_0$};
+\draw[thick, dashed] (3,0) -- (3,1.9);
+\end{tikzpicture}
+\end{center}
+%\caption{Intuition for Wald, score, and likelihood ratio tests with one parameter}
+%\label{fig:tests}
+%\end{figure}
+
+The \bgreen{Wald test} \citep{wald1943} relies on the asymptotic normality of $\hat\beta_\text{MLE}$:
+
+\begin{center}
+\begin{tikzpicture}[x = .25\textwidth, y = .8cm]
+\node at (-1,1) {For $k=1$};
+\node at (1,1) {For any $k$};
+\node at (-1,0) {$\frac{\hat\beta_{A,\text{MLE}}}{\widehat{\text{SE}}\left(\hat\beta_{A,\text{MLE}}\right)} \stackrel{D}{\rightarrow} N(0,1)$};
+\node at (1,0) {$\left[\hat{\vec\beta}_{A,\text{MLE}}\right]^T
+	\left[\hat\V\left(\hat{\vec{\beta}}_{A,\text{MLE}}\right)\right]^{-1}
+	\hat{\vec\beta}_{A,\text{MLE}}
+	\stackrel{D}{\rightarrow} \chi^2_k$};
+\node[align=center,anchor=north,font=\footnotesize] at (-1,-.8) {Standardized deviation from the null\\Squared would be $\sim \chi^2_1$};
+\node[align=center,anchor=north,font=\footnotesize] at (1,-.8) {\bgreen{Intuition} in special case with independent coefficient estimates:\\Sum of squared standardized deviations from the null};
+\end{tikzpicture}
+\end{center}
+
+The \bgreen{likelihood ratio test} \citep{neyman1933,wilks1938} compares nested models: a restricted model estimating $\vec\beta_B$ and assuming $\vec\beta_A=0$ with likelihood $L^*_R$, and an unrestricted model with likelihood $L^*$.%\footnote{See \citet{casella2002} Thm. 10.3.1.}
+
+\begin{center}
+\begin{tikzpicture}[x = .25\textwidth, y = .8cm]
+\node at (0,0) {$-2\log\left(\frac{L^*_R}{L^*}\right) \stackrel{D}{\rightarrow} \chi^2_k$};
+\node[align=center,font=\footnotesize] at (0,-1) {
+	\bgreen{Intuition:} We have more evidence in favor of the unrestricted model if the likelihood ($L^*_R$) under the restricted\\
+	 model is much smaller than the likelihood under the unrestricted model $L^*$. We need more evidence if $k$ is larger.
+};
+\end{tikzpicture}
+\end{center}
+
+The \bgreen{score test} \citep{rao1948} is based on the score function and the Fisher information evaluated at $\vec\beta_0$.
+
+\begin{center}
+\begin{tikzpicture}[x = .25\textwidth, y = .8cm]
+\node at (-1,1.1) {For $k=1$};
+\node at (1,1.1) {For any $k$};
+\node at (-1,0) {$\frac{\left(\frac{\partial}{\partial \beta_A}\ell(\vec\beta\mid y)\right) ^ 2}
+	{\frac{\partial^2}{\partial {\beta_A}^2}\ell(\vec\beta\mid y)}
+	\bigg\rvert_{\beta_A = 0}
+	\stackrel{D}{\rightarrow} \chi^2_1$};
+\node at (1,0) {$\left[s\left(\tilde{\vec\beta}\right)\right]^T
+	\left[\mathcal{I}\left(\tilde{\vec\beta}\right)\right]^{-1}
+	\left[s\left(\tilde{\vec\beta}\right)\right]\bigg\rvert_{\tilde{\vec\beta} = \vec\beta_0}
+	\stackrel{D}{\rightarrow} \chi^2_k$};
+\node[align=center,anchor=north] at (-1.3,-1.1) {$\frac{\text{Squared slope}}{\text{Rate of change of slope}}$};
+\draw[->, thick, olive] (-1.57,-1.4) to[bend left = 45] (-1.48,0);
+\node[align=center,anchor=north,font=\footnotesize] at (-.4,-.9) {Evaluated at\\the null hypothesis};
+\draw[->, thick, olive] (-.67,-1.3) -- (-.8,-.8);
+\node[align=center,anchor=north,font=\footnotesize] at (-1,-2.1) {\bgreen{Intuition}: A steep likelihood with\\minimal curvature is far from the maximum.};
+\node[align=center,anchor=north,font=\footnotesize] at (.8,-.9) {Matrix of rate of change\\of slopes in all directions};
+\node[align=center,anchor=north,font=\footnotesize] at (.8,-2.1) {Score vector of slopes\\in all directions};
+\draw[->, thick, olive] (.39,-2.6) to[bend left = 55] (.33,-.6);
+\draw[->, thick, olive] (1.21,-2.6) to[bend right = 55] (1.27,-.6);
+\draw[->, thick, olive] (0.77,-1) -- (0.77,-.6);
+\node[align=center,anchor=north,font=\footnotesize] at (1.7,-1.5) {Evaluated at\\the null hypothesis};
+\draw[->, thick, olive] (1.6,-1.5) -- (1.5,-.8);
+\end{tikzpicture}
+\end{center}
 
 \section*{\bblue{Reporting results}}
 
@@ -202,6 +325,10 @@ $$\tilde\tau = \overbrace{h\left(\tilde{Y}_1,\dots,\tilde{Y}_n\right)}^{\substac
 \item \bgreen{Repeat} steps 2-6 thousands of times.
 \item \bgreen{Summarize} the resulting distribution of the $\tilde\tau$ samples in a clear, informative graph. 
 \end{enumerate}
+
+% \section*{\bblue{Comparing models}}
+
+% Deviance. Cross-validation. 
 
 \begin{sidewaystable}[!htbp]
 \small
@@ -296,14 +423,14 @@ Multinomial logit &
 	
 \hline
 \end{tabular}
-\caption{Common generalized linear models (GLMs). List is not exhaustive. Alternative parameterizations and link functions exist; these were chosen to maximize consistency of notation within the table. Link functions denoted $g^*$ are not the canonical link for the given response type (see Supplement \ref{exponentialFamily}). There are various reasons to choose a non-canonical link in some cases; one such reason is that the inverse of the canonical link $g^{-1}(\eta_i) = \mu_i$ does not always map all possible values of $\eta_i$ (the real line) into the support of $\mu_i$.}
+\caption{Common generalized linear models (GLMs). List is not exhaustive. Alternative parameterizations and link functions exist; these were chosen to maximize consistency of notation within the table. Link functions denoted $g^*$ are not the canonical link for the given response type (see Supplement A). There are various reasons to choose a non-canonical link in some cases; one such reason is that the inverse of the canonical link $g^{-1}(\eta_i) = \mu_i$ does not always map all possible values of $\eta_i$ (the real line) into the support of $\mu_i$.}
 \label{tbl:GLMs}
 \end{sidewaystable}
 
 \newpage
 \appendix
 
-\section{Exponential family}
+\section*{\bblue{Supplement A. Exponential family}}
 \label{exponentialFamily}
 The distributions used in generalized linear models all come from the \bgreen{exponential family}. \\ The probability density function of each distribution can be written in the following form:
 $$f(y\mid \vec\theta) = \overbrace{h(y)}^{\substack{\text{Normalizing}\\\text{constant}}} \exp\bigg(\overbrace{{\vec\theta}^T}^{\substack{\text{Natural}\\\text{parameter}}}\overbrace{\vec\phi(y)}^{\substack{\text{Sufficient}\\\text{statistics}}} - \overbrace{A\left(\vec\theta\right)}^{\substack{\text{Cumulant}\\\text{function}}}\bigg)$$
@@ -343,7 +470,7 @@ $$\begin{aligned}
 
 For more complex distributions, having a known function for the mean and variance is nice! For more on the exponential family, we recommend \citet{murphy2012} Ch. 9. A Bayesian technique called \bgreen{variational inference} approximates distributions with the closest possible match among the exponential family (see \citealt{murphy2012} Ch. 21). There are also many fun connections between the distributions within the exponential family; for this we recommend \citet{blitzstein2014}.
 
-\section{Connection to Bayesian inference}
+\section{\bblue{Supplement B. Connection to Bayesian inference}}
 \label{bayes}
 We will not cover Bayesian inference in this class. In this class, the unknown parameters ($\beta$) are treated as fixed constants. In Bayesian inference, the unknown parameters are treated as random variables.
 $$P(\vec\theta\mid \vec{y}) = \frac{\overbrace{P(\vec{y}\mid \vec\theta)}^\text{Likelihood}\overbrace{P(\vec\theta)}^\text{Prior}}{\underbrace{P(\vec{y})}_\text{Normalizing constant}}$$
@@ -371,7 +498,7 @@ What would that prior look like? To build intuition for the above, we can interp
 
 \begin{figure}[!ht]
 \centering
-\includegraphics[width = .5\textwidth]{figures/beta}
+\includegraphics[width = .6\textwidth]{figures/beta}
 \caption{Beta distribution probability density function. Lighter green indicates a more diffuse prior that can be interpreted as having fewer pseudocounts before seeing the data.}
 \label{fig:beta}
 \end{figure}
@@ -389,7 +516,9 @@ $$\hat\pi_\text{Posterior Mean} =
 		
 Rather than arguing about the choice of a flat prior, it may be wiser to choose a ``weakly informative'' prior which gains efficiency by placing lower probability on highly improbable regions of the parameter space \citep{gelman2008}. We chose a conjugate prior in this example so that the math would be nice, but one can use Markov Chain Monte Carlo (MCMC) methods to sample from the posterior distribution even when it does not have an analytical solution (see \citealt{brooks2011} and \citealt{robert2010} for introductions). MCMC represents one of the foremost computational breakthroughs in statistics in recent decades, and new methods for sampling from the posterior are continually being developed (i.e. \citealt{carpenter2017}). Bayesian methods are likely to become even more accessible to applied researchers in the future as computation improves. For those interested in Bayesian inference, we recommend \citet{hoff2009} and \citet{gelman2014}.
 
+\newpage
+\begin{small}
 \bibliography{GLM_handout}
-
+\end{small}
 
 \end{document}
