@@ -1,0 +1,4 @@
+\beamer@sectionintoc {1}{Workflow}{3}{0}{1}
+\beamer@sectionintoc {2}{Duration}{4}{0}{2}
+\beamer@sectionintoc {3}{Using distributions}{109}{0}{3}
+\beamer@sectionintoc {4}{Zelig}{151}{0}{4}
