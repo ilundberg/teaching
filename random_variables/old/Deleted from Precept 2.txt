@@ -1,0 +1,21 @@
+\begin{frame}{Gender pay gap NEED TO FINISH}
+Suppose a firm has three different occupations: assistants, salespersons, and managers, and we are given data on the average hourly wage and the proportion women in each occupation.
+\begin{table}[ht]
+\centering
+\tiny
+\begin{tabular}{lccc}
+  \hline
+Occupation & Hourly pay for women & Hourly pay for men & Proportion of employees in this class \\ 
+  \hline
+Assistants & \$10.00 & \$10.25 & 0.6 \\ 
+ Salespersons & \$12.00 & \$12.30 & 0.4 \\ 
+ Managers & \$15.00 & \$18.00 & 0.3 \\ 
+   \hline
+\end{tabular}
+\end{table}
+What is the average gender pay gap $G$?
+\pause
+$$E(G) = \pause E(E[G\mid O]) = \pause E(0.25I(O=1) + 0.30I(O=2) + 3.00I(O=3)$$
+\pause
+$$=.25(.6)+.30(.4)+3(.3)=$$
+\end{frame}
