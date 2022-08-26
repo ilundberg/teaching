@@ -1,0 +1,56 @@
+\documentclass[10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{parskip}
+\usepackage[margin = 1in]{geometry}
+\usepackage{xcolor}
+\usepackage[colorlinks = true,linkcolor = blue, urlcolor  = blue,citecolor = blue,anchorcolor = blue]{hyperref}
+\usepackage{framed}
+\usepackage{apacite}
+\usepackage[authoryear,sort]{natbib}
+\bibliographystyle{apalike}
+\newcommand{\E}{\textrm{E}}
+\renewcommand*{\theenumi}{\thesection.\arabic{enumi}}
+
+\begin{document}
+
+\begin{Large} 
+Info 6751. Fall 2022. Problem Set 1. Due on Canvas by 5pm on 29 Aug.
+\end{Large}
+\hline
+
+\setcounter{section}{-1}
+\section{(2 points) A bit about you}
+
+Tell me about yourself! What is your area of research? What are you excited about in this course? Is there any particular question that you are hoping to tackle with tools from causal inference?
+
+\section{(24 points) Material covered 23 Aug}
+
+\begin{enumerate}
+    \item (4 points) Explain the difference between $Y_i(A_i)$, $Y_i(a)$, and $Y(a)$.
+    \item (4 points) Does it make sense to write $\E(Y_i(a))$? Why or why not?
+    \item (4 points) True or false. If you have enough data, you can make causal claims without assumptions. Explain why or why not in a couple sentences as though speaking to an undergrad.
+    \item You attend a TA training, and the instructor makes some claims about its effectiveness. For each claim below, (i) translate the claim into a precise mathematical statement and (ii) say whether or not the claim is causal. Feel free to define your own notation and invent additional specifics as needed. There are multiple correct ways to be precise; feel free to pick any one.
+\begin{enumerate}
+    \item (4 points) Last year, there was a survey of TAs before and after this training. We asked about their sense of preparation for the classroom. Comparing before and after, the average response went up.
+    \item (4 points) Last year, a set of TAs took this training. It had a positive average causal effect on their sense of preparation for the classroom.
+    \item (4 points) Last year, a set of TAs took this training. For every TA, the training had a positive causal effect on their sense of preparation for the classroom.
+\end{enumerate}
+\end{enumerate}
+
+\section{(24 points) Material covered 25 Aug}
+
+A researcher working for a social media platform is investigating the spread of misinformation online. They are particularly interested in News Source A. They notice that when a user's friend comments on an article by News Source A, then that user is more likely to share articles from News Source A in the future. Most broadly, they wonder if a friend's comment affects the user's engagement with News Source A.
+
+\begin{enumerate}
+    \item (20 points) Your first task is to define the target trial for this question. The research question is intentionally unclear, so you will need to invent details. The answer to this question will be a paragraph of text, involving math only if you find it helpful. Some things to think about include
+    \begin{itemize}
+        \item What is the hypothetical intervention?
+        \item What is the outcome?
+        \item What is the follow-up period between treatment and outcome?
+        \item Who is the target population?
+        \item How are unit-level quantities aggregated to a population-level summary?
+    \end{itemize}
+    \item (4 points) How might the observed data differ from the target trial you defined above?
+\end{enumerate}
+
+\end{document}
