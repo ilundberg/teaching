@@ -1,0 +1,317 @@
+\documentclass{beamer}
+%\usetheme{Boadilla}
+%\usetheme{Szeged}
+%\usetheme{Singapore}
+\usetheme{Frankfurt}
+\usecolortheme{dove}
+\newcommand\independent{\protect\mathpalette{\protect\independenT}{\perp}}
+\newenvironment{alltt}{\ttfamily}{\par}
+\def\independenT#1#2{\mathrel{\rlap{$#1#2$}\mkern2mu{#1#2}}}
+\usepackage{amsmath}
+\usepackage{graphicx}
+
+\title{Precept 2: Random Variables}
+\subtitle{Soc 500: Applied Social Statistics}
+\author{Ian~Lundberg}
+\institute[Princeton]{Princeton University}
+\date{September 2016}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\section{Logistics}
+\begin{frame}{Logistics}
+\begin{itemize}
+  \item Reactions to the problem set?
+  \item Solutions will be posted at 9:30
+  \item New problem set is out
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Learning Objectives}
+\begin{enumerate}
+  \item Build intuition with random variables
+  \item Comfort applying the rules of expectation and variance
+  \item Review Benford's Law (useful for homework)
+  \item Conceptual clarity with joint distributions and marginalization
+  \item Convey that random variables are fun!
+\end{enumerate}
+\end{frame}
+
+\section{Random Variables}
+\begin{frame}{What is a random variable?}
+\begin{definition}
+A \textbf{random variable} is a mapping from the sample space to the real line.
+\end{definition}
+\textbf{Example:}
+\begin{itemize}
+  \item $Y$ is the income of a random person in a country
+  \item $\Omega$ = sample space = all people in the country
+  \item $Y$ is a function mapping the chosen person to an income
+  \item Randomness is in the person who was chosen
+\end{itemize}
+\end{frame}
+
+\begin{frame}{What is this $\sim$ sign?}
+\begin{itemize}
+\item Equality in distribution
+\item Does not imply equality in values
+\item Can we think of two random variables with the same distribution, which are not necessarily equal?
+\begin{itemize}
+\item Two coin flips
+\end{itemize}
+\item ...which are almost surely not equal?
+\end{itemize}
+$$Z_1\sim Normal(0,1)$$
+$$Z_2=-Z_1$$
+\end{frame}
+
+\section{PMF, PDF, CDF}
+\begin{frame}{Probability mass function (PMF)}
+When I roll a die, what is the PMF?
+$$P(X=1)=1/6,...,P(X=6)=1/6$$
+$$P(X=x)=\begin{cases}
+  1/6,& \text{if }x\in\{1,...,6\} \\
+  0,& \text{otherwise}
+\end{cases}$$
+ADD FIGURE
+\end{frame}
+
+\begin{frame}{Cumulative distribution function (CDF)}
+What is the corresponding CDF, when I roll a die?
+$$P(X\leq 1)=1/6,\dots,P(X\leq 6)=6/6$$
+$$P(X\leq x)=\begin{cases}
+  0,& x<1 \\
+  \lfloor x\rfloor/6,& x\in [1,6] \\
+  1,& x>6
+\end{cases}$$
+ADD FIGURE
+\end{frame}
+
+\begin{frame}{Cumulative distribution function (CDF)}
+Which one is a proper CDF? \\
+\begin{center}\includegraphics{Bullseye_Poll.png} \\
+\includegraphics{CDF1.png} \\
+\includegraphics{CDF2.png} \\
+\includegraphics{CDF3.png} \\
+\includegraphcis{CDF4.png}
+\end{center}
+\end{frame}
+
+\begin{frame}{Properties of the CDF}
+\begin{itemize}
+\item Non-decreasing
+\item Right continuous
+\item $F(x)\rightarrow 0$ as $x\rightarrow -\infty$
+\item $F(x)\rightarrow 1$ as $x\rightarrow \infty$
+INCLUDE FIGURE
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Continuous random variables}
+
+Suppose it is Lawnparties, and a very drunk Princetonian spins around ten times before throwing darts at a wall. Suppose each side of the wall is marked 0 and 1. Ignoring the vertical position of the darts, the horizontal position of the darts might be distributed \alert{uniformly} over the interval.
+
+$$U\sim Uniform(0,1)$$
+The CDF of the uniform is
+$$F(x)=x$$
+\end{frame}
+
+\begin{frame}
+\centering
+\includegraphics{Unif1a.pdf} \\
+\includegraphics{Unif1b.pdf}
+\end{frame}
+
+\begin{frame}
+\centering
+\includegraphics{Unif2a.pdf} \\
+\includegraphics{Unif2b.pdf}
+\end{frame}
+
+\begin{frame}
+\centering
+\includegraphics{Unif3a.pdf} \\
+\includegraphics{Unif3b.pdf}
+\end{frame}
+
+\begin{frame}
+\centering
+\includegraphics{Unif4a.pdf} \\
+\includegraphics{Unif4b.pdf}
+\end{frame}
+
+\begin{frame}
+What is the probability that a dart lands between 0.4 and 0.5?
+\pause
+The \texttt{punif()} command in \texttt{R} gives the cumulative distribution function.
+$$F(.5) - F(.4) = .1$$
+\texttt{punif(.5) - punif(.4)}
+\end{frame}
+
+\begin{frame}
+
+Now let's suppose we have someone better at throwing darts, so we're going to measure how far they are from the center of the wall in inches. In this case, perhaps the darts will be distributed \alert{normally} around the center of the wall.
+$$X\sim N(\mu = 0, \sigma = 12)$$
+\end{frame}
+
+\begin{frame}
+$$X\sim N(\mu = 0, \sigma = 12)$$
+What is the probability of getting a bullseye ($X=0$)?
+\\
+\begin{center}
+\includegraphics{Normal0.pdf} \\
+\includegraphics{Bullseye_Poll.png}
+\end{center}
+\end{frame}
+
+\begin{frame}
+...we'll come back to that. \\
+How would we calculate the probability that a dart lands within 6 inches of the center of the wall?
+\pause
+\begin{center}\includegraphics{Normal1.pdf}
+\end{center}
+\pause
+$$P(X\in(-6,6)) = P(X<6)-P(X<-6) = \Phi(6) - \Phi(-6)$$
+\pause
+\begin{footnotesize}\texttt{pnorm(6, mean = 0, sd = 12) - pnorm(-6, mean = 0, sd = 12)}\end{footnotesize}
+\end{frame}
+
+\begin{frame}{One inch?}
+\centering\includegraphics{Normal2.pdf}
+\pause
+$$P(X\in(-1, 1))=0.0664135$$
+\end{frame}
+
+\begin{frame}{1/100th of an inch?}
+\centering\includegraphics{Normal3.pdf}
+$$P(X\in(-.01, .01))=0.0006649037$$
+\end{frame}
+
+\begin{frame}{A perfect bullseye?}
+\centering\includegraphics{Normal4.pdf}
+$$P(X=0)=0$$
+\end{frame}
+
+\section{Expectation}
+\begin{frame}{Law of Iterated Expectation (Adam's Law)}
+
+\end{frame}
+
+\section{Variance}
+\begin{frame}{Law of Total Variance (Evve's Law)}
+
+\end{frame}
+
+\section{Benford's Law}
+\begin{frame}\frametitle{Benford's Law\footnote{Benford's Law slides deeply indebted to Brandon Stewart and previous preceptors.}}
+\begin{enumerate}
+\item Law describing the (non-uniform) distribution of leading digits in many real-life sources of data.
+\item Found in election results, populations of cities, stock market prices, word frequencies, death rates, street addresses and anything with a power law.
+\item Often used for fraud detection.
+\end{enumerate}
+\end{frame}
+
+\begin{frame}\frametitle{Benford's Law}
+For base 10 counting systems, Benford's Law states that the leading digit has the probability distribution:
+\begin{align*}
+P(d) &= \text{log}_{10}(d + 1) - \text{log}_{10}(d) \\
+&= \text{log}_{10}(1 + \frac{1}{d})
+\end{align*}
+Originally discovered by Simon Newcomb in 1881 but then restated and named after physicist Frank Benford in 1938.
+\end{frame}
+
+\begin{frame}\frametitle{Benford's Law}
+\begin{figure}[h!]
+\centering
+\scalebox{.8}{\includegraphics{Section2PMF.pdf}}
+\end{figure}
+\end{frame}
+
+\begin{frame}\frametitle{Benford's Law: Applications}
+\begin{itemize}
+\item Accounting Fraud (Nigrini, 1999)
+\item Campaign Finance Fraud (Cho and Gaines, 2007)
+\item Polling Fraud (Grebner and Weissman 2010)
+\item Iranian Elections (Beber and Scacco 2009)
+\end{itemize}
+Benford's Law is admissible evidence of fraud in U.S. court!
+\end{frame}
+
+\begin{frame}\frametitle{Benford's Law: Data Rules\footnote{These come directly from Cho and Gaines (2007) formulation of the guidelines in Durtschi, Hillison and Pacini(2004)}}
+Benford's Law works best under the following conditions:
+\begin{itemize}
+\item Numbers that result from combinations of other numbers (e.g. quantity times price)
+\item Individual transactions like sales or data
+\item Large datasets (these are asymptotic properties!)
+\item Positive skew with mean greater than the median
+\end{itemize}
+It doesn't work as well in situations where:
+\begin{itemize}
+\item Numbers are assigned (check numbers, invoice numbers etc.)
+\item There are procedural or psychological thresholds
+\end{itemize}
+Question: Why wouldn't this work with individual campaign contributions?
+\end{frame}
+
+\begin{frame}\frametitle{Benford's Law: Analytic Practice}
+Let's practice our analytic skills by looking at the expectation and variance of first digits under Benford's Law: \\
+How would we write the expectation of the first digit?
+\begin{align*}
+P(d) &= \text{log}_{10}(1 + \frac{1}{d})
+\end{align*}
+\end{frame}
+
+\begin{frame}\frametitle{Benford's Law: Analytic Practice}
+Let's practice our analytic skills by looking at the expectation and variance of first digits under Benford's Law: \\
+How would we write the expectation of the first digit?
+\begin{align*}
+P(d) &= \text{log}_{10}(1 + \frac{1}{d}) \\
+E(D) &= \sum_{i=1}^9 \text{log}_{10}(1 + \frac{1}{i})*i \\
+&= 3.44 
+\end{align*}
+\end{frame}
+
+\begin{frame}\frametitle{Benford's Law: Analytic Practice}
+Let's practice our analytic skills by looking at the expectation and variance of first digits under Benford's Law: \\
+How would we write the expectation of the first digit?
+\begin{align*}
+P(d) &= \text{log}_{10}(1 + \frac{1}{d}) \\
+E(d) &= \sum_{i=1}^n \text{log}_{10}(1 + \frac{1}{i})*i \\
+\end{align*}
+How would you write the variance?
+\end{frame}
+
+\begin{frame}\frametitle{Benford's Law: Analytic Practice}
+Let's practice our analytic skills by looking at the expectation and variance of first digits under Benford's Law: \\
+How would we write the expectation of the first digit?
+\begin{align*}
+P(d) &= \text{log}_{10}(1 + \frac{1}{d}) \\
+E(D) &= \sum_{i=1}^9 \text{log}_{10}(1 + \frac{1}{i})*i \\
+&= 3.44 
+\end{align*}
+How would you write the variance?
+\begin{align*}
+V(D) &= \sum_{i=1}^9 \text{log}_{10}(1 + \frac{1}{i})(i - 3.44)^2  
+\end{align*}
+\end{frame}
+
+\section{Joint Distributions}
+\begin{frame}{Marginalizing}
+
+\end{frame}
+
+\section{Story Proofs}
+\begin{frame}{Story Proofs}
+
+\end{frame}
+
+\section{Closing}
+\begin{frame}{Key formulas}
+
+\end{frame}
+
+\end{document}
