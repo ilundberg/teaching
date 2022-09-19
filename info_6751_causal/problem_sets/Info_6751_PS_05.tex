@@ -1,0 +1,63 @@
+\documentclass[10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{parskip}
+\usepackage[margin = 1in]{geometry}
+\usepackage{xcolor}
+\usepackage[colorlinks = true,linkcolor = blue, urlcolor  = blue,citecolor = blue,anchorcolor = blue]{hyperref}
+\usepackage{framed}
+\usepackage{apacite}
+\usepackage[authoryear,sort]{natbib}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\bibliographystyle{apalike}
+\newcommand{\E}{\textrm{E}}
+\renewcommand*{\theenumi}{\thesection.\arabic{enumi}}
+\renewcommand{\P}{\text{P}}
+\usepackage{tikz}
+\usetikzlibrary{arrows,shapes.arrows,positioning,shapes,patterns,calc}
+
+\begin{document}
+
+\begin{Large} 
+Info 6751. Fall 2022. Problem Set 5. Due on Canvas by 5pm on 26 Sep.
+\end{Large}
+\hline
+
+\section{(15 points) Material covered Tuesday}
+Part 1 is about the \textbf{continuous treatments}. Let $A$ be a continuous treatment.
+
+\begin{enumerate}
+    \item (5 points) In words, explain the dose-response curve $\E(Y^a)$ at the value $a$
+    \item (5 points) In words, explain the additive shift estimand $\E(Y^{A+1} - Y^A)$
+    \item (5 points) In words, explain the incremental causal effect $\lim_{\delta\rightarrow 0}\frac{\E(Y^{A + \delta} - Y^A)}{\delta}$ 
+\end{enumerate}
+
+\section{(35 points) Material covered Thursday}
+Part 2 is about the \textbf{comparing estimators}. The purpose of this exercise is to practice using out-of-sample predictive performance to select among two estimators for $\E(Y\mid\vec{X})$.
+
+This example involves analyzing data from \href{https://doi.org/10.1017/S0022381611001162}{Finkel et al.~2012}, who studied the effects of Kenya's National Civic Education
+Program carried out in 2006--2007. The intervention involved a collection of public events designed to promote civic knowledge and civic participation, and the authors estimate that it reached about a quarter of the Kenyan adult population. See \href{https://doi.org/10.1017/S0022381611001162}{Finkel et al.~2012} p. 54 for details. The data come from a 2008--2009 survey of 3,600 people of whom half had face-to-face interactions with the program (the treated group), and the other half did not (the control group). The two groups were not randomized, but the control sample was designed to be comparable to the treated sample.
+
+Our analysis will use the following variables:
+\begin{itemize}
+    \item The outcome variable \texttt{y} is the response to the question ``Would you say you are very informed, somewhat informed, or not informed about the contents of the Kenyan constitution?'' For simplicity, I have dichotomized this response to (0 = not informed) and (1 = somewhat or very informed).
+    \item The treatment variable \texttt{treated}, coded (0 = no intervention) and (1 = received intervention).
+    \item A set of confounding variables:
+    \begin{itemize}
+        \item \texttt{age}, a numeric variable
+        \item \texttt{income}, coded (very low, low, high, very high, missing)
+        \item \texttt{church\_attendance}, a binary indicator
+        \item \texttt{group\_membership}, a numeric scale of active social group memberships, coded (0 = no memberships) to (2 = extremely active)
+        \item \texttt{married}, a binary indicator
+    \end{itemize}
+    \item A variable \texttt{set} coded for whether this observation is in the \texttt{train} set or the \texttt{test} set. I created this variable. You will use it in 2.3.
+\end{itemize}
+
+\begin{enumerate}
+    \item (10 points) Estimate a logistic regression model with all variables entered additively (i.e., \texttt{y $\sim$ treated + age + income + church\_attendance + group\_membership + married}). Predict the outcome under treatment and control for all units, difference, and average. What is the average treatment effect?
+    \item (10 points) Another scholar says you have missed important interactions. Estimate a logistic regression model where the treatment is interacted with every other covariate (i.e., \texttt{y $\sim$ treated*(age + income + church.attendance + group.membership + married)}). What is the average treatment effect?
+    \item (15 points) Re-estimate each model using only the subsample with $\texttt{set == train}$. Make predictions for the subsample with $\texttt{set == test}$. Calculate the mean squared prediction error (MSE) in this test set, for each model. What is the MSE for each model? Which model predicts better?
+\end{enumerate}
+
+\end{document}
+
