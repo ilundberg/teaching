@@ -1,7 +1,7 @@
 
 # Instructions:
 
-# The data file "lec10.csv" contains Simulation 1 from Dorie et al.
+# The data file "lectrue_10.csv" contains Simulation 1 from Dorie et al.
 # It contains these variables:
 # y: outcome (numeric)
 # z: treatment (binary)
@@ -38,7 +38,7 @@
 
 # Load tidyverse for data manipulation
 library(tidyverse)
-d <- read_csv("lec10.csv")
+d <- read_csv("lecture_10.csv")
 
 # Define a model formula
 my_formula <- as.formula(paste("y ~ z + ",paste0("x_",1:58, collapse = " + ")))
@@ -57,8 +57,9 @@ d_treated_under_control <- d_treated %>%
 
 # Some algorithms require a model matrix. Create that.
 X <- model.matrix(my_formula, data = d)
-X_treated <- model.matrix(my_formula, data = d_treated)
-X_treated_under_control <- model.matrix(my_formula, data = d_treated_under_control)
+X_treated <- X[d$z == 1,]
+X_treated_under_control <- X_treated
+X_treated_under_control[,"z"] <- 0
 
 ####################
 # EXAMPLE WITH OLS #
@@ -110,7 +111,7 @@ satt_glmnet <- d_treated %>%
 library(ranger)
 fit_ranger <- ranger(my_formula, data = d)
 predicted_ranger_under_control <- predict(fit_ranger, data = d_treated_under_control)
-yhat_ranger_under_control <- predicted_ranger$predictions
+yhat_ranger_under_control <- predicted_ranger_under_control$predictions
 satt_ranger <- d_treated %>%
   mutate(yhat0 = yhat_ranger_under_control) %>%
   summarize(satt = mean(y - yhat0)) %>%
