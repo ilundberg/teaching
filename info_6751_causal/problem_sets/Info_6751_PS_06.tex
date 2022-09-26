@@ -1,0 +1,104 @@
+\documentclass[10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{parskip}
+\usepackage[margin = 1in]{geometry}
+\usepackage{xcolor}
+\usepackage[colorlinks = true,linkcolor = blue, urlcolor  = blue,citecolor = blue,anchorcolor = blue]{hyperref}
+\usepackage{framed}
+\usepackage{apacite}
+\usepackage[authoryear,sort]{natbib}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\bibliographystyle{apalike}
+\newcommand{\E}{\textrm{E}}
+%\renewcommand*{\theenumi}{\thesection.\arabic{enumi}}
+\renewcommand{\P}{\text{P}}
+\usepackage{tikz}
+\usetikzlibrary{arrows,shapes.arrows,positioning,shapes,patterns,calc}
+
+\begin{document}
+
+\begin{Large} 
+Info 6751. Fall 2022. Problem Set 5. Due on Canvas by 5pm on 3 Oct.
+\end{Large}
+\hline \vskip .1in
+
+This problem set is about \textbf{matching}. It is different from other problem sets in two ways.
+\begin{itemize}
+    \item There is only one part. We are covering this topic on both Tuesday and on Thursday. When you are stuck, the answer is likely in \href{https://arxiv.org/pdf/1010.5586.pdf}{Stuart (2010)}.
+    \item This problem set is very self-guided. There are many matching methods, and you are asked to choose one method and run with it. We will all get different answers! That's ok.
+\end{itemize}
+
+\section*{Data and Causal Assumptions}
+
+This problem set uses data from Dehejia \& Wahba (\href{https://www.tandfonline.com/doi/abs/10.1080/01621459.1999.10473858}{1999}, \href{https://doi.org/10.1162/003465302317331982}{2002}), a version of which we have used previously. For this problem set, download the data \texttt{nsw.dta} from \url{http://www.nber.org/~rdehejia/data/nsw_dw.dta}. These data contain 260 untreated individuals and 185 individuals who received a job training intervention. The data are described \href{https://users.nber.org/~rdehejia/nswdata2.html}{here}. For the problem set, here is an abbreviated description:
+
+The outcome variable is \texttt{re78} (earnings in 1978).\\
+The treatment variable is \texttt{treat}: (1 job training, 0 none).\\
+Pre-treatment covariates include:
+\begin{itemize}
+    \item \texttt{age}: numeric
+    \item \texttt{education}: numeric, number of years
+    \item \texttt{nodegree}: 1 if no high school degree, 0 otherwise. This is a dichotomized version of \texttt{education}
+    \item \texttt{black}: 1 if Black, 0 otherwise
+    \item \texttt{hispanic}: 1 if Hispanic, 0 otherwise
+    \item \texttt{married}: 1 if married, 0 otherwise
+    \item \texttt{re74}: earnings in 1974
+    \item \texttt{re75}: earnings in 1975
+\end{itemize}
+The data also include a constant \texttt{data\_id} which simply identifies the dataset.
+
+\section*{Causal Assumptions and Estimand}
+
+Our goal is to estimate the Feasible Sample Average Treatment Effect on the Treated (FSATT),
+
+$$\frac{1}{\lvert \mathcal{S}\rvert} \sum_{i\in\mathcal{S}}\left(Y_i^1 - Y_i^0\right)$$
+
+where $\mathcal{S}$ is the set of matched treated units. In this set, use the observed values for $Y_i^1$ and use the average of matched controls to impute $Y_i^0$. This set may not include all treated units, because some may be dropped in question (2).
+
+Throughout, assume consistency, exchangeability, and positivity given these pre-treatment covariates.
+
+\section*{Rubric for Grading}
+
+Everyone will have different answers. There are two important requirements that will affect grading:
+\begin{itemize}
+    \item Explain as though writing to an undergrad who has taken one semester of introductory statistics.
+    \item Include your code, either embedded in the PDF (e.g., with RMarkdown) or as a separate uploaded file.
+\end{itemize}
+
+Feel free to use one of the many \href{https://www.biostat.jhsph.edu/~estuart/propensityscoresoftware.html}{software implementations} for matching. You can also code from scratch.
+
+\section*{Questions}
+
+\begin{enumerate}
+    \item (10 points) Define a distance metric for matching.
+    \begin{itemize}
+        \item How do you measure the distance between two distinct covariate vectors $\vec\ell$ and $\vec\ell'$?
+        \item Define in math and in words. Motivate your choice.
+        \item Examples include Euclidean distance, Manhattan distance, Mahalanobis distance, squared difference in propensity scores, etc. For coarsened exact matching, this would be a distance of 0 if in the same coarsened stratum and $\infty$ if not.
+    \end{itemize}
+    \item (10 points) Define a caliper.
+    \begin{itemize}
+        \item At what distance between units $i$ and $j$ would you say that the two are too far apart to consider as matches?
+        \item How many treated units do you lose by applying the caliper?
+    \end{itemize}
+    \item (10 points) Implement a matching method.
+    \begin{itemize}
+        \item How many control units are matched to each treated unit?
+        \begin{itemize}
+            \item e.g. 1:1, 2:1, a varying number depending on the pool, etc.
+        \end{itemize}
+        \item Are you matching with or without replacement?
+        \item Is your matching algorithm greedy or optimal?
+    \end{itemize}
+    \item (10 points) Evaluate the matched sample.
+    \begin{itemize}
+        \item How many treated units do you have?
+        \item How many control units?
+        \item How similar are the covariate distributions of the treated and control units in the matched sample? Ideally you would do this for all covariates, but to restrict the length of the homework summarize the mean value of \texttt{education} in the matched sample by treatment category.
+    \end{itemize}
+    \item (10 points) Analyze the outcome. What is your FSATT estimate?
+\end{enumerate}
+
+\end{document}
+
