@@ -106,4 +106,8 @@ simulations %>%
   # Put performance metrics in the title
   ggtitle(paste("Bias:",performance$bias,
                 "\nVariance:",performance$variance,
-                "\nMSE:",performance$mse))
+                "\nMSE:",performance$mse)) +
+  xlab("Sample Estimate") +
+  ylab("Count") +
+  annotate(geom = "text", x = ATT_truth$ATT_truth, y = 0, angle = 90,
+           vjust = -.5, hjust = -.5, label = "Truth", color = "blue")

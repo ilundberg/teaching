@@ -15,8 +15,8 @@ N_population <- 100000
 data_population <- data.frame(L1 = rnorm(N_population),
                               L2 = rnorm(N_population)) %>%
   # Generate potential outcomes as functions of L
-  mutate(Y0 = rnorm(n(), mean = L1 + L2, sd = .1),
-         Y1 = rnorm(n(), mean = Y0 + 1, sd = .1)) %>%
+  mutate(Y0 = rnorm(n(), mean = L1 + L2, sd = 1),
+         Y1 = rnorm(n(), mean = Y0 + 1, sd = 1)) %>%
   # Generate treatment as a function of L
   mutate(propensity_score = plogis(-2 + L1 + L2)) %>%
   mutate(A = rbinom(n(), 1, propensity_score)) %>%
