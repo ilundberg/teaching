@@ -1,9 +1,11 @@
 # readme
 
-This class exercise is about matching. There are two learning goals.
+*Matching* is a powerful tool for causal inference. *Simulation* is a powerful tool in methodology, when we want to study the performance of one or more estimators in a setting where the ground truth is known. The two learning goal of this exercise address these ideas together.
 
-1) **Concrete goal.** Apply matching estimators for causal effects
-2) **Abstract goal.** Use simulation to evaluate the bias, variance, and mean squared error of an estimator.
+Learning goals:
+
+1) Apply matching estimators for causal effects
+2) Use simulation to evaluate the bias, variance, and mean squared error of an estimator.
 
 # Data structure
 
@@ -12,7 +14,7 @@ The file [matching_prepare_data.R](https://github.com/ilundberg/teaching/tree/ma
 Each observation contains several observed variables:
 
 * `L1` A numeric confounder
-* `L2 A numeric confounder
+* `L2` A numeric confounder
 * `A` A binary treatment
 * `Y` A numeric outcome
 
@@ -27,9 +29,9 @@ Each observation also contains outcomes that we know only because the data are s
 The file [matching_exercise.R](https://github.com/ilundberg/teaching/tree/master/info_6751_causal/class_exercises/matching/matching_exercise.R) is a skeleton of code for the exercise. It conducts four steps:
 
 1. Load the simulated population
-2. Draw a sample from that population. Estimate the ATT using the sample using the [MatchIt](https://cran.r-project.org/web/packages/MatchIt/vignettes/MatchIt.html) package.
-3. Repeatedly sample and store an estimate. Summarize the performance of the estimator.
-4. Summarize the performance of the estimator.
+2. Draw a sample from that population. Estimate the ATT using the sample using the [MatchIt](https://cran.r-project.org/web/packages/MatchIt/vignettes/MatchIt.html) package
+3. Repeatedly sample and store an estimate. Summarize the performance of the estimator
+4. Summarize the performance of the estimator
 
 The code is currently structured to conduct a basic form of matching: 1:1 without replacement nearest neighbor propensity score matching.
 
