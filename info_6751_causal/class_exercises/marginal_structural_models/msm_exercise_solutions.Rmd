@@ -2,10 +2,14 @@
 title: "Exercise: Inverse Probability Weighting and Marginal Structural Models"
 author: "Ian Lundberg"
 date: '2022-10-06'
-output: html_document
+output: github_document
 ---
 
-Note for Python users: This exercise is set up for R users. The exercise will also work for Python users. So that Python users do not have to run the data generation functions, I have pre-generated 1,000 samples from `generate_data()` and 10,000 samples from `generate_data_for_stabilized()`. These are available in [sim.csv](https://github.com/ilundberg/teaching/tree/master/info_6751_causal/class_exercises/marginal_structural_models/sim.csv) and [sim_stabilized.csv](https://github.com/ilundberg/teaching/tree/master/info_6751_causal/class_exercises/marginal_structural_models/sim_stabilized.csv). In each file, an additional column $r$ indexes the simulated samples. You could run your estimator on each sample defined by $r$.
+```{r, echo  = F}
+knitr::opts_chunk$set(dpi = 600)
+```
+
+Note for Python users: This exercise is set up for R users. The exercise will also work for Python users. So that Python users do not have to run the data generation functions, I have pre-generated 1,000 samples from `generate_data()` and 10,000 samples from `generate_data_for_stabilized()`. These are available in [sim.csv](https://github.com/ilundberg/teaching/raw/master/info_6751_causal/class_exercises/marginal_structural_models/sim.csv) and [sim_stabilized.csv](https://github.com/ilundberg/teaching/raw/master/info_6751_causal/class_exercises/marginal_structural_models/sim_stabilized.csv). In each file, an additional column $r$ indexes the simulated samples. You could run your estimator on each sample defined by $r$.
 
 # Setup: Prepare environment and generate data.
 
@@ -92,8 +96,8 @@ Define three estimators that will apply to samples drawn from `generate_data()`.
 3. **Marginal structural model estimator.** Estimate by a weighted linear regression.
     - Nonparametrically estimate the conditional probability of treatment, $\pi_i = P(A = a_i\mid L = \ell_i)$.
     - Define a weight $w_i = \frac{1}{\pi_i}$
-    - Estimate $E(Y^a) = E\left(\frac{\mathbb{I}(A = a)Y}{\pi}\right)$, using the weighted mean of $Y_i$ among those with $A_i = a$ weighted by $w_i$.
-  
+    - Estimate $E(Y^a)$, by predicting at $A = a$ from a weighted linear regression of $Y_i$ on $A_i$, weighted by $w_i$.
+    
 Note: Because both (2) and (3) require a weight, you might write a function that takes a data frame and appends a weight.
 
 ```{r}
@@ -153,19 +157,19 @@ I suggest setting $n = 100$.
 Compare the results from the IPW estimator and the outcome estimator. What do you notice?
 
 \textbf{Answer.} Simulate one sample, apply the estimators, and report the result in a table.
-```{r, results = 'asis'}
+```{r}
 sim_data <- generate_data(100)
 estimates <- outcome_estimator(sim_data) %>%
-  mutate(method = "Outcome ") %>%
+  mutate(estimator = "Outcome ") %>%
   bind_rows(ipw_estimator(sim_data) %>%
-              mutate(method = "IPW ")) %>%
+              mutate(estimator = "IPW ")) %>%
   bind_rows(msm_estimator(sim_data) %>%
-              mutate(method = "MSM "))
-xtable::xtable(
-  estimates %>%
-    pivot_wider(names_from = "method", values_from = "estimate")
-)
+              mutate(estimator = "MSM "))
+# Look at results
+estimates %>%
+  pivot_wider(names_from = "estimator", values_from = "estimate")
 ```
+
 IPW and outcome modeling yield the **same estimate**! This is because these two are mathematically equivalent not only in expectation, but also in every finite sample. This occurs only when both methods are carried out nonparametrically.
 
 # 3. Apply your estimators to many samples from `generate_data()`

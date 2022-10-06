@@ -8,9 +8,9 @@ will also work for Python users. So that Python users do not have to run
 the data generation functions, I have pre-generated 1,000 samples from
 `generate_data()` and 10,000 samples from
 `generate_data_for_stabilized()`. These are available in
-[sim.csv](https://github.com/ilundberg/teaching/tree/master/info_6751_causal/class_exercises/marginal_structural_models/sim.csv)
+[sim.csv](https://github.com/ilundberg/teaching/raw/master/info_6751_causal/class_exercises/marginal_structural_models/sim.csv)
 and
-[sim_stabilized_out.csv](https://github.com/ilundberg/teaching/tree/master/info_6751_causal/class_exercises/marginal_structural_models/sim_stabilized_out.csv).
+[sim_stabilized.csv](https://github.com/ilundberg/teaching/raw/master/info_6751_causal/class_exercises/marginal_structural_models/sim_stabilized.csv).
 In each file, an additional column
 ![r](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;r "r")
 indexes the simulated samples. You could run your estimator on each
@@ -85,7 +85,7 @@ generate_data <- function(n) {
 }
 ```
 
-![](msm_exercise_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+![](msm_exercise_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
 In the data generating process above, the true
 ![E(Y^a) = 0](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;E%28Y%5Ea%29%20%3D%200 "E(Y^a) = 0")
@@ -133,11 +133,13 @@ Define three estimators that will apply to samples drawn from
     -   Define a weight
         ![w_i = \\frac{1}{\\pi_i}](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;w_i%20%3D%20%5Cfrac%7B1%7D%7B%5Cpi_i%7D "w_i = \frac{1}{\pi_i}")
     -   Estimate
-        ![E(Y^a) = E\\left(\\frac{\\mathbb{I}(A = a)Y}{\\pi}\\right)](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;E%28Y%5Ea%29%20%3D%20E%5Cleft%28%5Cfrac%7B%5Cmathbb%7BI%7D%28A%20%3D%20a%29Y%7D%7B%5Cpi%7D%5Cright%29 "E(Y^a) = E\left(\frac{\mathbb{I}(A = a)Y}{\pi}\right)"),
-        using the weighted mean of
+        ![E(Y^a)](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;E%28Y%5Ea%29 "E(Y^a)"),
+        by predicting at
+        ![A = a](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;A%20%3D%20a "A = a")
+        from a weighted linear regression of
         ![Y_i](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;Y_i "Y_i")
-        among those with
-        ![A_i = a](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;A_i%20%3D%20a "A_i = a")
+        on
+        ![A_i](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;A_i "A_i"),
         weighted by
         ![w_i](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;w_i "w_i").
 

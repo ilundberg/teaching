@@ -44,7 +44,7 @@ sim <- foreach(r = 1:1000, .combine = "rbind", .packages = "tidyverse") %dorng% 
 write_csv(sim, file = "sim.csv")
 
 sim_stabilized <- foreach(r = 1:10000, .combine = "rbind", .packages = "tidyverse") %dorng% {
-  generate_data(n = 100) %>%
+  generate_data(n = 20) %>%
     mutate(r = r) %>%
     select(r,L,A,Y)
 }
