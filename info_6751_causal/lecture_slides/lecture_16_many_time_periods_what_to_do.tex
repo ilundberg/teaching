@@ -273,7 +273,7 @@ such that $A_0\indep L_0$ in the weighted pseudo-population
 $$W^{A_0} = \frac{1}{\P(A_0\mid L_0)}$$
  \vskip .1in \pause
 Repeat in every time period $t$
-$$W^{A_t} = \frac{1}{\P(A_0\mid \bar{A}_{t-1}, \bar{L}_t)}$$ \vskip .3in \pause
+$$W^{A_t} = \frac{1}{\P(A_t\mid \bar{A}_{t-1}, \bar{L}_t)}$$ \vskip .3in \pause
 Define the overall weight as the product
 $$W^{\bar{A}} = \prod_{k=0}^K \frac{1}{\P(A_k\mid \bar{A}_{k-1},\bar{L}_k)}$$
 
@@ -355,20 +355,20 @@ This 5-value treatment is ``neighborhood disadvantage''
 
 \begin{frame}{Real example: Neighborhood disadvantage}{Wodtke et al. 2011}
 
-Neighborhoods are experienced over time:
+Neighborhoods are experienced over time \pause
 $$\bar{a}$$
-is a trajectory of neighborhood disadvantage over ages $2,3,\dots,17$ \vskip .2in
+is a trajectory of neighborhood disadvantage over ages $2,3,\dots,17$ \vskip .2in \pause
 The authors study the effect of neighborhood disadvantage, \\
 \begin{center}
 \includegraphics[width = .5\textwidth]{figures/whe_eq1}
-\end{center}
-Example:\\
+\end{center}\pause
+Example:\\ 
 $\bar{a}$ is residence in the most advantaged neighborhood each year\\and\\$\bar{a'}$ is residence in the most disadvantaged neighborhood each year
 \end{frame}
 
 \begin{frame}{Real example: Neighborhood disadvantage}{Wodtke et al. 2011}
 
-Problem: Neighborhoods $A_1$ shape family characteristics $L_2$, which confound where people live in the future $A_2$ \vskip .1in
+Problem: Neighborhoods $A_1$ shape family characteristics $L_2$, which confound where people live in the future $A_2$ \vskip .1in \pause
 
 \includegraphics[width = \textwidth]{figures/whe_fig1}
 
@@ -390,7 +390,7 @@ Problem: Neighborhoods $A_1$ shape family characteristics $L_2$, which confound 
 
 Solution: MSM-IPW \vskip .1in
 
-\includegraphics[width = \textwidth]{figures/whe_eq4} \vskip .2in
+\includegraphics[width = \textwidth]{figures/whe_eq4} \vskip .2in \pause
 
 Also with stabilized weights \vskip .1in
 
@@ -404,7 +404,10 @@ Also with stabilized weights \vskip .1in
 \begin{itemize}
 \item 5 levels of neighborhood disadvantage \pause
 \item 16 time periods \pause
-\item $16^5 = 1,048,576$ possible treatment vectors $\vec{A}$
+\item $5^{16} = 152,587,890,625$ possible treatment vectors $\vec{A}$ \pause
+\begin{itemize}
+\item For reference: Only 117 billion people have ever been born on Earth
+\end{itemize}
 \end{itemize}
 
 \end{frame}
