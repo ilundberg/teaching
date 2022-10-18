@@ -110,7 +110,43 @@ A joint adjustment set for $\bar{A}$ is doomed \pause
 \item A backdoor path remains: $A_1 \leftarrow L_1\rightarrow Y$
 \end{itemize} 
 \end{itemize} \pause
-To proceed, we need a different adjustment set in each time period
+What to do? \pause \bref{https://github.com/ilundberg/teaching/blob/master/info_6751_causal/class_exercises/ipw_dynamic/ipw_dynamic.pdf}{[Class Exercise]}
+\end{frame}
+
+\begin{frame}{Generalizing the class exercise} \pause
+
+An ideal case: The \bblue{sequentially randomized experiment} \pause
+\begin{enumerate}
+\item randomize treatment at time 0, then \pause 
+\item randomize treatment at time 1, then \pause
+\item $\hdots$ \pause
+\item randomize treatment at time $k$
+\end{enumerate} \pause \vskip .1in
+Then you can estimate $\E(Y^{a_1,\dots,a_k})$ by $\E(Y\mid \vec{A} = \vec{a})$.
+
+\end{frame}
+
+\begin{frame}{Generalizing the class exercise: Conditional assignments} \pause
+
+A \bblue{sequential conditionally randomized experiment} \pause
+\begin{enumerate}
+\item At time 0, \pause
+\begin{itemize}
+\item Measure covariates $\vec{L}_0$ \pause
+\item Define a probability of treatment at each confounder value $\vec\ell_0$ \pause
+\item Randomly assign treatment $A_0$ \pause
+\end{itemize}
+\item At time 1,
+\begin{itemize}
+\item Measure covariates $\vec{L}_1$
+\item Define a probability of treatment at each treatment history $A_0$ and confounder history $(\vec\ell_0,\vec\ell_1)$
+\item Randomly assign treatment $A_1$
+\end{itemize} \pause
+\item $\hdots$ \pause
+\item Repeat up to time $k$
+\end{enumerate} \pause \vskip .1in
+Then you can estimate $\E(Y^{a_1,\dots,a_k})$ by the methods to come
+
 \end{frame}
 
 \begin{frame}{Notation}
@@ -125,7 +161,7 @@ To proceed, we need a different adjustment set in each time period
 \end{frame}
 
 \begin{frame}[t]{Identification: Sequential ignorability}
-\onslide<2-6>{
+\onslide<2->{
 \begin{center}
 \begin{tikzpicture}[y = .2in]
 \node at (0,0) {$Y^g \qquad \indep \qquad A_k\qquad \mid \qquad \bar{A}_{k-1} = g(\bar{A}_{k-2}, \bar{L}_{k-1}), \qquad \bar{L}_k$};
@@ -139,7 +175,7 @@ To proceed, we need a different adjustment set in each time period
 \end{center}
 for all assignment rules $g$ and time periods $k = 1,\dots,K$
 \begin{center}
-\onslide<3-6>{
+\onslide<3->{
 \begin{tikzpicture}[x = 1in]
 \node (y) at (2,0) {$Y$};
 \node (l0) at (0,-1) {$L_0$};
@@ -168,6 +204,9 @@ for all assignment rules $g$ and time periods $k = 1,\dots,K$
 \end{tikzpicture}
 }
 \end{center}
+}
+\onslide<7->{
+Holds by design in sequentially randomized experiments.\\Holds by assumption in observational studies.
 }
 
 \end{frame}
@@ -223,31 +262,27 @@ for all assignment rules $g$ and time periods $k = 1,\dots,K$
 \draw[->, thick, red] (u) -- (l0);
 \draw[->, thick, red] (u) -- (l1);
 \draw[->, thick, red] (u) to[bend right] (y);
-\end{tikzpicture} \pause \vskip .1in
-\begin{enumerate}
-\item How would you weight to estimate the effect of $A_0$?
-\item How would you weight to estimate the effect of $A_1$?
-\end{enumerate} \vskip .1in
-We will combine these
+\end{tikzpicture}
 
 \end{frame}
 
 \begin{frame}{Inverse probability weighting}
 
-In time 0, define an inverse probability of treatment weight
+In time 0, define an inverse probability of treatment weight\\
+such that $A_0\indep L_0$ in the weighted pseudo-population
 $$W^{A_0} = \frac{1}{\P(A_0\mid L_0)}$$
-such that $A_0$ does not depend on $L_0$ after weighting \vskip .1in \pause
-In time 1, do it again
-$$W^{A_1} = \frac{1}{\P(A_0\mid \bar{A}_{k-1}, \bar{L}_1)}$$ \vskip .1in \pause
-Continue through all time periods. \vskip .3in \pause
+ \vskip .1in \pause
+Repeat in every time period $t$
+$$W^{A_t} = \frac{1}{\P(A_0\mid \bar{A}_{t-1}, \bar{L}_t)}$$ \vskip .3in \pause
 Define the overall weight as the product
 $$W^{\bar{A}} = \prod_{k=0}^K \frac{1}{\P(A_k\mid \bar{A}_{k-1},\bar{L}_k)}$$
 
 \end{frame}
 
 \begin{frame}{Inverse probability weighting}
-$$W^{\bar{A}} = \prod_{k=0}^K \frac{1}{\P(A_k\mid \bar{A}_{k-1},\bar{L}_k)}$$
-\begin{tikzpicture}[x = .6in]
+What did we accomplish? \pause The weight
+$$W^{\bar{A}} = \prod_{k=0}^K \frac{1}{\P(A_k\mid \bar{A}_{k-1},\bar{L}_k)}$$ \vskip .2in
+\begin{tikzpicture}[x = .6in] \pause
 \node[anchor = north west] at (-.5,2) {Takes us from this};
 \node (y) at (2,0) {$Y$};
 \node[red] (u) at (.5,-2) {$U$};
@@ -267,7 +302,7 @@ $$W^{\bar{A}} = \prod_{k=0}^K \frac{1}{\P(A_k\mid \bar{A}_{k-1},\bar{L}_k)}$$
 \draw[->, thick, red] (u) -- (l0);
 \draw[->, thick, red] (u) -- (l1);
 \draw[->, thick, red] (u) to[bend right] (y);
-\end{tikzpicture} \begin{tikzpicture}[x = .6in]
+\end{tikzpicture} \onslide<4->{ \begin{tikzpicture}[x = .6in]
 \node[anchor = north west, align = left] at (-.5,2) {to this pseudo-population};
 \node (y) at (2,0) {$Y$};
 \node[red] (u) at (.5,-2) {$U$};
@@ -287,25 +322,12 @@ $$W^{\bar{A}} = \prod_{k=0}^K \frac{1}{\P(A_k\mid \bar{A}_{k-1},\bar{L}_k)}$$
 \draw[->, thick, red] (u) -- (l0);
 \draw[->, thick, red] (u) -- (l1);
 \draw[->, thick, red] (u) to[bend right] (y);
-\end{tikzpicture}
+\end{tikzpicture}}
 \end{frame}
 
-\begin{frame}{Inverse probability weighting with marginal structural models}
+\begin{frame}{Real example: Neighborhood disadvantage}{Wodtke et al. 2011}
 
-Finally, we can put a model on top of the weighting.
-
-$$\E(Y^{\bar{a}}) = \E(Y\mid \bar{A} = \bar{a}) = h(\bar{a})$$
-for some function $h()$ that pools information. \vskip .2in
-\bgray{Example:} Outcomes depend on the proportion of periods treated
-$$h(\bar{a}) = \frac{1}{K + 1}\sum_{k=0}^K a_k$$
-
-\end{frame}
-
-\goalsframe
-
-\begin{frame}{Real example: Neighborhood disadvantage}
-
-Wodtke, G. T., Harding, D. J., \& Elwert, F. (2011). \bref{https://doi.org/10.1177/0003122411420816}{Neighborhood effects in temporal perspective: The impact of long-term exposure to concentrated disadvantage on high school graduation.} American Sociological Review, 76(5), 713-736.
+Wodtke, G. T., Harding, D. J., \& Elwert, F. (2011).\\\bref{https://doi.org/10.1177/0003122411420816}{Neighborhood effects in temporal perspective: The impact of long-term exposure to concentrated disadvantage on high school graduation.}\\American Sociological Review, 76(5), 713-736.
 
 \end{frame}
 
@@ -377,15 +399,38 @@ Also with stabilized weights \vskip .1in
 \end{frame}
 
 \begin{frame}{Real example: Neighborhood disadvantage}{Wodtke et al. 2011}
-Marginal structural model: Logit
+
+\bred{Problem:} Huge number of treatments \pause
 \begin{itemize}
-\item 5-category treatment entered numerically
-\item Baseline covariates included due to stabilized weights
-\item Weights adjust for time-varying confounding
+\item 5 levels of neighborhood disadvantage \pause
+\item 16 time periods \pause
+\item $16^5 = 1,048,576$ possible treatment vectors $\vec{A}$
 \end{itemize}
+
 \end{frame}
 
-\begin{frame}{Real example: Neighborhood disadvantage}{Wodtke et al. 2011}
+\begin{frame}{Digression: Marginal structural models in dynamic settings} \pause
+
+Recall that when $A$ takes many values, we can fit a marginal structural model \pause
+\begin{itemize}
+\item Example: $\E(Y^a) = \alpha + \beta a$ \pause
+\item Estimate by $\E^\text{PP}(Y\mid A = a)$ where $\E^\text{PP}$ is the expectation in the pseudopopulation weighted so that treatment is independent of confounders.
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Digression: Marginal structural models in dynamic settings}{Wodtke et al. 2011} \pause
+
+MSMs also apply in dynamic settings where $\vec{A}$ is a vector over time. \vskip .2in \pause
+From Wodtke et al. 2011:
+\begin{center}
+\includegraphics[width = .7\textwidth]{figures/whe_eq2}
+\end{center} \pause
+Interpretation: $\bar{a}$ is duration-weighted exposure
+
+\end{frame}
+
+\begin{frame}{Results: Neighborhood disadvantage}{Wodtke et al. 2011} \pause
 
 \includegraphics[width = .9\textwidth]{figures/whe_fig3}
 
