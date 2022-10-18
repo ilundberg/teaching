@@ -1,0 +1,125 @@
+---
+title: 'Inverse Probability Weighting: Intuition in Two Periods'
+author: "Info 6751: Causal Inference in Observational Settings"
+date: 'SOLUTIONS to Class Exercise. 18 October 2022.'
+output: pdf_document
+header-includes: \usepackage{tikz} \usetikzlibrary{arrows,shapes.arrows,positioning,shapes,patterns,calc}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+# The causal problem and data
+
+You teach a class of $n = 16$ elementary students. At each time point $t$, the student can either be below grade level ($L_t = 1$) or not below grade level ($L_t = 0$). You can assign extra support $A_t = 1$ (e.g., reading practice with a parent volunteer) to some but not all of the students; the untreated students have $A_t = 0$.
+
+We will study this process over two time periods: $t = 0$ and $t = 1$. The outcome would be something defined after these periods, but for our purposes there will be no outcome. We will focus on how you would weight, which would apply to any outcome you might care about.
+
+\begin{center}
+\begin{tikzpicture}
+\node (l0) at (0,-1) {$L_0$};
+\node (a0) at (0,0) {$A_0$};
+\node (l1) at (1,-1) {$L_1$};
+\node (a1) at (1,0) {$A_1$};
+\node (y) at (2,0) {$Y$};
+\draw[->, thick] (l0) -- (a0);
+\draw[->, thick] (a0) -- (l1);
+\draw[->, thick] (l1) -- (a1);
+\draw[->, thick] (a0) to[bend left] (y);
+\draw[->, thick] (l0) to[out = 270, in = 280] (y);
+\draw[->, thick] (l1) -- (y);
+\draw[->, thick] (a1) -- (y);
+\end{tikzpicture}
+\end{center}
+
+Here is how the causal process unfolds:
+
+* At time 0, you see that 50\% of the class is below grade level: $P(L_0 = 1) = 0.5$
+* At every time period $t$, treatment is assigned so that
+  * those below grade level $L_{t} = 1$ receive extra support $A_{t+1} = 1$ with probability 1
+  * those not below grade level $L_{t} = 0$ receive extra support $A_{t+1} = 1$ with probability 0.5
+* At every time period $t$, treatment affects the next confounder
+  * if you receive support $A_t = 1$, then you will not fall behind $P(L_{t+1} = 1) = 0$
+  * if you do not receive support $A_t = 0$, then you have a 50\% chance of falling behind: $P(L_{t+1} = 1) = 0.5$
+
+The table below shows data from this causal process.
+
+```{r, results = 'asis', echo = F}
+d <- data.frame(ID = 1:16,
+                L0 = rep(c(1,0),each = 8)) %>%
+  group_by(L0) %>%
+  mutate(A0 = case_when(L0 == 1 ~ rep(1,n()),
+                        L0 == 0 ~ rep(c(1,0), each = n() / 2))) %>%
+  group_by(A0) %>%
+  mutate(L1 = case_when(A0 == 1 ~ 0,
+                        A0 == 0 ~ rep(c(1,0), n() / 2))) %>%
+  group_by(L1) %>%
+  mutate(A1 = case_when(L1 == 1 ~ rep(1,n()),
+                        L1 == 0 ~ rep(c(1,0), n() / 2))) %>%
+  ungroup() %>%
+  mutate_all(as.integer) %>%
+  mutate(w0 = NA, w1 = NA, w = NA)
+print(xtable::xtable(d,
+      caption = "Weighting Two Time Periods: A Table to Fill In"),
+      include.rownames = F, size = "Large")
+```
+
+\clearpage
+
+# 1. Estimating $E(Y\mid do(A_0 = 1))$
+
+Suppose we want to estimate the expected outcome under an intervention to set $A_0 = 1$. We plan to reweight the 12 units observed with $A_0 = 1$. What weight should we put on each of these 6 units?
+
+Note that $L_0$ is a sufficient conditioning set.
+
+```{r, echo = F}
+weighted <- d %>%
+  group_by(L0) %>%
+  mutate(p_A0 = case_when(A0 == 1 ~ mean(A0))) %>%
+  group_by(L1) %>%
+  mutate(p_A1 = case_when(A1 == 1 ~ mean(A1))) %>%
+  mutate(w0 = 1 / p_A0,
+         w1 = 1 / p_A1,
+         w = w0 * w1) %>%
+  ungroup() %>%
+  mutate_all(as.integer)
+```
+
+\textbf{Solution:} See \texttt{w0} in ``Table of Weights in Two Time Periods.''
+
+# 2. Estimating $E(Y\mid do(A_1 = 1))$
+
+Suppose we want to estimate the expected outcome under an intervention to set $A_1 = 1$. We plan to reweight the 9 units observed with $A_1 = 1$. What weight should we put on each of these 6 units?
+
+Note that $L_1$ is a sufficient conditioning set.
+
+\textbf{Solution:} See \texttt{w1} in ``Table of Weights in Two Time Periods.''
+
+# 3. Estimating $E(Y\mid do(A_0 = 1, A_1 = 1))$
+
+Suppose we want to estimate the expected outcome under an intervention to set $A_0 = 1$ and $A_1 = 1$. We plan to reweight the 6 units observed in this condition. What weight should we put on each of these 6 units?
+
+\textbf{Solution:} See \texttt{w} in ``Table of Weights in Two Time Periods.''
+
+```{r, results = 'asis', echo = F}
+print(xtable::xtable(data.frame(weighted %>%
+                                  select(ID,L0,A0,L1,A1,w0,w1,w)),
+                     caption = "Table of Weights in Two Time Periods: Solution of Weights for Estimating Outcomes Under Treatment. w0 is for estimmating E(Y | do(A0 = 1)), w1 is for estimating E(Y | do(A1 = 1)), and w is for estimating E(Y | do(A0 = 1, A1 = 1))"), 
+      include.rownames = F, size = "Large")
+```
+
+# 4. Check: Is it right?
+
+Using your weight from 1.3,
+
+* take a weighted average of $L_0$. Does your result match the factual distribution of $L_0$?
+* take a weighted average of $L_1$. Does your result match the factual distribution of $L_1$?
+
+Think about why you would get the answers above.
+
+\textbf{Solution.} In the population, the mean of $L_0$ is `r mean(d$L0)`. In the pseudo-population, the mean of $L_0$ is `r (weighted %>% filter(A0 == 1 & A1 == 1) %>% summarize(L0 = weighted.mean(L0, w = w)))$L0`. These match; an intervention to set $A_0$ to the value 1 would leave $L_0$ unchanged.
+
+In the population, the mean of $L_1$ is `r mean(d$L1)`. In the pseudo-population, the mean of $L_1$ is `r (weighted %>% filter(A0 == 1 & A1 == 1) %>% summarize(L1 = weighted.mean(L1, w = w)))$L1`. These do not match; an intervention to set $A_0 = 1$ causes $L_1 = 0$ for everyone.
+
