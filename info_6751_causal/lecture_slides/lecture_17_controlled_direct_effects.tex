@@ -316,7 +316,7 @@ You are an elementary school principal \vskip .2in
 
 \end{frame}
 
-\begin{frame}{CDE warning: Non-manipulable mediators} \pause
+\begin{frame}{CDE warning: Mediators that are not manipulated} \pause
 
 It is hard to study mediators that occur inside a person's head\vskip .1in
   \pause
@@ -330,6 +330,38 @@ Mediators outside a person's head are easier to study
 \begin{itemize}
 \item Example: Require every kid to visit the school library
 \end{itemize}
+
+\end{frame}
+
+\begin{frame}{CDE warning: Mediators that are not manipulated}
+
+\begin{tikzpicture}[x = 1in, y = .7in, every node/.style = {anchor=center}]
+\node<1>[anchor = north west, font = \footnotesize] at (-1,-1.6) {An experiment might randomize the treatment $A$};
+\node<2>[anchor = north west, font = \footnotesize] at (-1,-1.6) {But the mediator $M$ is not randomized};
+\node<3-4>[anchor = north west, font = \footnotesize, align = left] at (-1,-1.6) {By adjusting for the collider $M$,\\researchers open a backdoor path $A\rightarrow\boxed{M}\leftarrow U\rightarrow Y$};
+\node<5>[anchor = north west, font = \footnotesize, align = left] at (-1,-1.6) {We can solve this problem by measuring the confounders $Z$};
+\node at (-1,-2.2) {};
+\node (y) at (1.4,0) {$Y$};
+\node (A) at (0,0) {$A$};
+\node<1-2,5-> (M) at (.7,0) {$M$};
+\node<3-4>[draw] (M) at (.7,0) {$M$};
+\draw[->, thick, seagreen] (A) -- node[midway, above, font = \footnotesize, seagreen] {Indirect} (M);
+\draw[->, thick, seagreen] (M) -- node[midway, above, font = \footnotesize, seagreen] {Effect} (y);
+\draw[->, thick, blue] (A) to[bend right = 90] node[midway, below, font = \footnotesize, outer sep = 5pt] {Direct Effect} (y);
+\onslide<2-4>{
+\node[red] (U) at (.7,.7) {$U$};
+\draw[->, thick, red] (U) to[bend left] (y);
+\draw[->, thick, red] (U) -- (M);
+}
+\onslide<4>{
+\draw[<->, thick, dashed, red] (A) to[bend left] (U); 
+}
+\onslide<5->{
+\node (Z) at (.7,.7) {$Z$};
+\draw[->, thick] (Z) to[bend left] (y);
+\draw[->, thick] (Z) -- (M);
+}
+\end{tikzpicture}
 
 \end{frame}
 
