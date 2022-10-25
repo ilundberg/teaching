@@ -339,30 +339,142 @@ CDE identification and estimation in observational studies
 
 \end{frame}
 
-\begin{frame}{Observational example}{Zhou, Xiang. 2022. \bref{https://doi.org/10.1177/00491241221113876}{Attendance, Completion, and Heterogeneous Returns to College: A Causal Mediation Approach}. Sociological Methods and Research.}
-
-\bgray{Research Question} \vskip .1in
-How do college attendance ($A$)\\and completion ($M$)\\affect earnings ($Y$)?
-
+\begin{frame}{A visual summary: Nonparametric sequential $g$-estimation}{Estimating $\tau(0) = \E(Y^{10} - Y^{00})$}
+\begin{tikzpicture}[x = \textwidth, y = .6\textheight, every node/.style = {font = \footnotesize}]
+\node at (0,0) {};
+\node at (1,1.1) {};
+\node [anchor = north west, align = left] at (0,1.3) {Text here will tell the story for those reading these slides online.};
+\end{tikzpicture}
 \end{frame}
 
-
-\begin{frame}{Observational example}{Zhou, Xiang. 2022. \bref{https://doi.org/10.1177/00491241221113876}{Attendance, Completion, and Heterogeneous Returns to College: A Causal Mediation Approach}. Sociological Methods and Research.}
-
-\includegraphics[width = \textwidth]{figures/Zhou2022_Fig2}
-
+\begin{frame}{A visual summary: Nonparametric sequential $g$-estimation}{Estimating $\tau(0) = \E(Y^{10} - Y^{00})$}
+\begin{tikzpicture}[x = \textwidth, y = .6\textheight, every node/.style = {font = \footnotesize}]
+\node at (0,0) {};
+\node at (1,1.1) {};
+\node<1> [anchor = north west, align = left] at (0,1.3) {Treatment variable $A$.\\You can think of this as randomized, or you can take this entire story to\\take place within subgroups of $\vec{X}$ sufficient to yield exchangeability.};
+\node<2> [anchor = north west] at (0,1.3) {$A$ affects an intermediate confounder $Z$};
+\node<3> [anchor = north west] at (0,1.3) {$Z$ affects the mediator $M$};
+\node<4-9> [anchor = north west, align = left] at (0,1.3) {We observe outcome means $\bar{Y}$ in each subgroup.\\We can now impute the outcome $Y^{A0}$ under $M = 0$\\in each stratum of $\{A,Z\}$.};
+\node<10> [anchor = north west, align = left] at (0,1.3) {To focus on the effect of $A$, we now ignore $Z$.};
+\node<11-13> [anchor = north west, align = left] at (0,1.3) {To focus on the effect of $A$, we now ignore $Z$.\\We have a weighted average over $Z\mid A = a$ for each $a$.\\Because the effect of $A$ is identified, $\underbrace{(Z\mid A = a)}_\text{Observational}\quad\sim \underbrace{(Z^a)}_\text{Interventional}$};
+\node<14> [anchor = north west, align = left] at (0,1.3) {The difference is the CDE $\tau(0)$!};
+\onslide<1->{
+\node at (.2,.75) {$A = 0$};
+\node at (.2,.25) {$A = 1$};
+\draw (.1, .5) rectangle (.3, 1);
+\draw (.1, .5) rectangle (.3, 0);
+% Example
+\node[anchor = north west, gray, font = \tiny, align = left] at (.1,1) {Librarian\\does not\\visit class};
+\node[anchor = north west, gray, font = \tiny, align = left] at (.1,.5) {Librarian\\visits class};
+}
+\onslide<2-9>{
+\node at (.4,.85) {$Z = 0$};
+\node at (.4,.6) {$Z = 1$};
+\node at (.4,.4) {$Z = 0$};
+\node at (.4,.15) {$Z = 1$};
+\draw (.3, .7) rectangle (.5, 1);
+\draw (.3, .5) rectangle (.5, .7);
+\draw (.3, .5) rectangle (.5, .3);
+\draw (.3, .3) rectangle (.5, 0);
+% Example
+\node[anchor = north west, gray, font = \tiny, align = left] at (.3,1) {I'd rather play};
+\node[anchor = north west, gray, font = \tiny, align = left] at (.3,.7) {I want a book!};
+}
+\onslide<3-5>{
+\node at (.6,.9) {$M = 0$};
+\draw (.5, .85) rectangle (.7, 1);
+\node at (.6,.75) {$M = 1$};
+\draw (.5, .7) rectangle (.7, .85);
+% Example
+\node[anchor = north west, gray, font = \tiny, align = left] at (.5,1) {Visits playground};
+\node[anchor = north west, gray, font = \tiny, align = left] at (.5,.85) {Visits library};
+}
+\onslide<4-5>{
+\node[anchor = north west, gray, font = \tiny, align = left] at (.7,1) {Reads books};
+\draw (.7, .7) rectangle (.9, .85);
+\draw (.7, .85) rectangle (.9, 1);
+\draw<5>[blue, line width = 2pt] (.7, .85) rectangle (.9, 1);
+\node at (.8,.9) {$\bar{Y}$};
+\node at (.8,.775) {$\bar{Y}$};
+}
+\onslide<3-6>{
+\node at (.6,.675) {$M = 0$};
+\draw (.5, .65) rectangle (.7, .7);
+\node at (.6,.575) {$M = 1$};
+\draw (.5, .5) rectangle (.7, .65);
+}
+\onslide<4-6>{
+\draw (.7, .65) rectangle (.9, .7);
+\draw (.7, .5) rectangle (.9, .65);
+\node at (.8,.675) {$\bar{Y}$};
+\node at (.8,.575) {$\bar{Y}$};
+}
+\onslide<3-7>{
+\node at (.6,.425) {$M = 0$};
+\draw (.5, .5) rectangle (.7, .35);
+\node at (.6,.325) {$M = 1$};
+\draw (.5, .3) rectangle (.7, .35);
+}
+\onslide<4-7>{
+\draw (.7, .5) rectangle (.9, .35);
+\draw (.7, .3) rectangle (.9, .35);
+\node at (.8,.425) {$\bar{Y}$};
+\node at (.8,.325) {$\bar{Y}$};
+}
+\onslide<3-8>{
+\node at (.6,.2) {$M = 0$};
+\draw (.5, .1) rectangle (.7, .3);
+\node at (.6,.05) {$M = 1$};
+\draw (.5, 0) rectangle (.7, .1);
+}
+\onslide<4-8>{
+\draw (.7, .1) rectangle (.9, .3);
+\draw (.7, 0) rectangle (.9, .1);
+\node at (.8,.2) {$\bar{Y}$};
+\node at (.8,.05) {$\bar{Y}$};
+}
+\onslide<6-12>{
+\node[anchor = north west, gray, font = \tiny, align = left] at (.5,1) {Proportion reading books if we prevent\\anyone from visiting the library ($M = 0$)};
+\node at (.7,.85) {$\E(Y^{00}\mid A = 0, Z = 0)$};
+\draw (.5, .7) rectangle (.9, 1);
+\draw<6>[blue, line width = 2pt] (.5, .7) rectangle (.9, 1);
+}
+\onslide<7-12>{
+\node at (.7,.6) {$\E(Y^{00}\mid A = 0, Z = 1)$};
+\draw (.5, .5) rectangle (.9, .7);
+}
+\onslide<8-12>{
+\node at (.7,.4) {$\E(Y^{10}\mid A = 1, Z = 0)$};
+\draw (.5, .5) rectangle (.9, .3);
+}
+\onslide<9-12>{
+\node at (.7,.15) {$\E(Y^{10}\mid A = 1, Z = 1)$};
+\draw (.5, .3) rectangle (.9, 0);
+}
+\onslide<11-12>{
+\node[align = center, font = \footnotesize] at (.4,.75) {Weighted by\\distribution of\\$Z\mid A = 0$};
+\draw[->, thick] (.425, .85) -- (.475, .9);
+\draw[->, thick] (.425, .65) -- (.475, .6);
+}
+\onslide<12>{
+\node[align = center, font = \footnotesize] at (.4,.25) {Weighted by\\distribution of\\$Z\mid A = 1$};
+\draw[->, thick] (.425, .35) -- (.475, .4);
+\draw[->, thick] (.425, .15) -- (.475, .1);
+}
+\onslide<13->{
+\node at (.6,.75) {$\E(Y^{10})$};
+}
+\onslide<13->{
+\node at (.6,.25) {$\E(Y^{00})$};
+}
+\end{tikzpicture}
 \end{frame}
 
-\begin{frame}{Observational example}{Zhou, Xiang. 2022. \bref{https://doi.org/10.1177/00491241221113876}{Attendance, Completion, and Heterogeneous Returns to College: A Causal Mediation Approach.} Sociological Methods and Research.}
-
-The original paper uses Double Machine Learning \hfill (complicated) \\
-We will discuss sequential $g$-estimation \hfill (simpler) \vskip .3in \pause
-A good reference on sequential $g$-estimation is: \vskip .1in
-Acharya, A., Blackwell, M., \& Sen, M. (2016). \bref{https://doi.org/10.1017/S0003055416000216}{Explaining causal findings without bias: Detecting and assessing direct effects.} American Political Science Review, 110(3), 512-529.
-
+\begin{frame}
+Sometimes we want to estimate with a model
 \end{frame}
 
-\begin{frame}[t]{Estimation by sequential $g$-estimation} \vskip .2in
+\begin{frame}[t]{Parametric sequential $g$-estimation {\scriptsize (see \bref{https://doi.org/10.1017/S0003055416000216}{Acharya, Blackwell, \& Sen 2016})}} \vskip .2in
 \begin{center}
 \begin{tikzpicture}[x = .7in]
 \node (a) at (0,0) {$A$};
@@ -382,24 +494,24 @@ Acharya, A., Blackwell, M., \& Sen, M. (2016). \bref{https://doi.org/10.1017/S00
 \draw[->, thick] (z) -- (y);
 \end{tikzpicture}
 \end{center}
-High-level overview:
+High-level overview: \pause
 \begin{enumerate}
-\item Estimate the effect of the mediator
+\item Estimate the effect of the mediator \pause
 \begin{itemize}
-\item Model $Y$ given $X, A, Z, M$
+\item Model $Y$ given $X, A, Z, M$ \pause
 \end{itemize}
-\item Construct $\tilde{Y}$ with the effect of the mediator removed
+\item Construct $\tilde{Y}$ with the effect of the mediator removed \pause
 \begin{itemize}
-\item $\tilde{Y} = Y - \left[\E(Y^M\mid X, A, Z) - \E(Y^0\mid X, A, Z)\right]$
+\item $\tilde{Y} = Y - \left[\E(Y^M\mid X, A, Z) - \E(Y^0\mid X, A, Z)\right]$ \pause
 \end{itemize}
-\item Estimate treatment effect on the de-mediated outcome
+\item Estimate treatment effect on the de-mediated outcome \pause
 \begin{itemize}
 \item Model $\tilde{Y}$ given $X, A$
 \end{itemize}
 \end{enumerate}
 \end{frame}
 
-\begin{frame}[t]{Estimation by sequential $g$-estimation} \vskip .2in
+\begin{frame}[t]{Parametric sequential $g$-estimation {\scriptsize (see \bref{https://doi.org/10.1017/S0003055416000216}{Acharya, Blackwell, \& Sen 2016})}} \vskip .2in
 \begin{center}
 \begin{tikzpicture}[x = .7in]
 \node (a) at (0,0) {$A$};
@@ -420,13 +532,13 @@ High-level overview:
 \end{tikzpicture}
 \end{center}
 
-\bgray{Step 1:} What outcome would have been realized at each $M = m$? \vskip .1in
+\bgray{Step 1:} What outcome would have been realized at each $M = m$? \vskip .1in \pause
 $$\E(Y^m\mid X, A, Z) = \E(Y\mid X, A, Z, M = m)$$
 because $M\rightarrow Y$ is identifiied given $\{X,A,Z\}$
 
 \end{frame}
 
-\begin{frame}[t]{Estimation by sequential $g$-estimation} \vskip .2in
+\begin{frame}[t]{Parametric sequential $g$-estimation {\scriptsize (see \bref{https://doi.org/10.1017/S0003055416000216}{Acharya, Blackwell, \& Sen 2016})}} \vskip .2in
 \begin{center}
 \begin{tikzpicture}[x = .7in]
 \node (a) at (0,0) {$A$};
@@ -448,10 +560,10 @@ because $M\rightarrow Y$ is identifiied given $\{X,A,Z\}$
 \end{center}
 
 \bgray{Step 2:}
-Construct a \bgray{de-mediated outcome}
+Construct a \bgray{de-mediated outcome} \pause
 $$\tilde{Y} = Y - \gamma(X,A,M)$$
 where the de-mediation function $\gamma$ is
-$$\underbrace{\gamma(X,A,M)}_{\substack{\text{Not a function of $Z$}\\\text{See below}}} = \underbrace{\E(Y\mid X, A, Z, M) - \E(Y\mid X, A, Z, M = 0)}_\text{Causal effect of the factual mediator value $M$ vs 0}$$ \vskip .1in
+$$\underbrace{\gamma(X,A,M)}_{\substack{\text{Not a function of $Z$}\\\text{See below}}} = \underbrace{\E(Y\mid X, A, Z, M) - \E(Y\mid X, A, Z, M = 0)}_\text{Causal effect of the factual mediator value $M$ vs 0}$$ \vskip .1in \pause
 
 \bgray{New assumption:} No $Z\times M$ interactions {\footnotesize (simplifies estimation)}
 \begin{itemize}
@@ -460,7 +572,7 @@ $$\underbrace{\gamma(X,A,M)}_{\substack{\text{Not a function of $Z$}\\\text{See 
 \end{itemize}
 \end{frame}
 
-\begin{frame}[t]{Estimation by sequential $g$-estimation} \vskip .2in
+\begin{frame}[t]{Parametric sequential $g$-estimation {\scriptsize (see \bref{https://doi.org/10.1017/S0003055416000216}{Acharya, Blackwell, \& Sen 2016})}} \vskip .2in
 \begin{center}
 \begin{tikzpicture}[x = .7in]
 \node (a) at (0,0) {$A$};
@@ -486,7 +598,7 @@ Estimate the treatment effect on the de-mediated outcome
 $$\E(Y^{a,0}\mid X) = \E(\tilde{Y}\mid X, A = a)$$
 \end{frame}
 
-\begin{frame}[t]{Estimation by sequential $g$-estimation} \vskip .2in
+\begin{frame}[t]{Parametric sequential $g$-estimation {\scriptsize (see \bref{https://doi.org/10.1017/S0003055416000216}{Acharya, Blackwell, \& Sen 2016})}} \vskip .2in
 \begin{center}
 \begin{tikzpicture}[x = .7in]
 \node (a) at (0,0) {$A$};
@@ -522,125 +634,6 @@ High-level overview:
 \end{itemize}
 \end{enumerate}
 \end{frame}
-
-\begin{frame}{A visual summary: Nonparametric sequential $g$-estimation}
-\begin{tikzpicture}[x = \textwidth, y = .6\textheight, every node/.style = {font = \footnotesize}]
-\node at (0,0) {};
-\node at (1,1.1) {};
-\node [anchor = north west, align = left] at (0,1.3) {Text here will tell the story for those reading these slides online.};
-\end{tikzpicture}
-\end{frame}
-
-\begin{frame}{A visual summary: Nonparametric sequential $g$-estimation}
-\begin{tikzpicture}[x = \textwidth, y = .6\textheight, every node/.style = {font = \footnotesize}]
-\node at (0,0) {};
-\node at (1,1.1) {};
-\node<1> [anchor = north west, align = left] at (0,1.3) {Treatment variable $A$.\\You can think of this as randomized, or you can take this entire story to\\take place within subgroups of $\vec{X}$ sufficient to yield exchangeability.};
-\node<2> [anchor = north west] at (0,1.3) {$A$ affects an intermediate confounder $Z$};
-\node<3> [anchor = north west] at (0,1.3) {$Z$ affects the mediator $M$};
-\node<4-8> [anchor = north west, align = left] at (0,1.3) {We observe outcome means $\bar{Y}$ in each subgroup.\\We can now impute the outcome $Y^{A0}$ under $M = 0$\\in each stratum of $\{A,Z\}$.};
-\node<9> [anchor = north west, align = left] at (0,1.3) {To focus on the effect of $A$, we now ignore $Z$.};
-\node<10-13> [anchor = north west, align = left] at (0,1.3) {To focus on the effect of $A$, we now ignore $Z$.\\We have a weighted average over $Z\mid A = a$ for each $a$.\\Because the effect of $A$ is identified, $\underbrace{(Z\mid A = a)}_\text{Observational}\quad\sim \underbrace{(Z^a)}_\text{Interventional}$};
-\node<14> [anchor = north west, align = left] at (0,1.3) {The difference is the CDE $\tau(0)$!};
-\onslide<1->{
-\node at (.2,.75) {$A = 0$};
-\node at (.2,.25) {$A = 1$};
-\draw (.1, .5) rectangle (.3, 1);
-\draw (.1, .5) rectangle (.3, 0);
-}
-\onslide<2-8>{
-\node at (.4,.85) {$Z = 0$};
-\node at (.4,.6) {$Z = 1$};
-\node at (.4,.4) {$Z = 0$};
-\node at (.4,.15) {$Z = 1$};
-\draw (.3, .7) rectangle (.5, 1);
-\draw (.3, .5) rectangle (.5, .7);
-\draw (.3, .5) rectangle (.5, .3);
-\draw (.3, .3) rectangle (.5, 0);
-}
-\onslide<3-4>{
-\node at (.6,.95) {$M = 1$};
-\draw (.5, .9) rectangle (.7, 1);
-\node at (.6,.8) {$M = 0$};
-\draw (.5, .7) rectangle (.7, .9);
-}
-\onslide<4>{
-\draw (.7, .7) rectangle (.9, .9);
-\draw (.7, .9) rectangle (.9, 1);
-\node at (.8,.95) {$\bar{Y}$};
-\node at (.8,.8) {$\bar{Y}$};
-}
-\onslide<3-5>{
-\node at (.6,.675) {$M = 0$};
-\draw (.5, .65) rectangle (.7, .7);
-\node at (.6,.575) {$M = 1$};
-\draw (.5, .5) rectangle (.7, .65);
-}
-\onslide<4-5>{
-\draw (.7, .65) rectangle (.9, .7);
-\draw (.7, .5) rectangle (.9, .65);
-\node at (.8,.675) {$\bar{Y}$};
-\node at (.8,.575) {$\bar{Y}$};
-}
-\onslide<3-6>{
-\node at (.6,.425) {$M = 0$};
-\draw (.5, .5) rectangle (.7, .35);
-\node at (.6,.325) {$M = 1$};
-\draw (.5, .3) rectangle (.7, .35);
-}
-\onslide<4-6>{
-\draw (.7, .5) rectangle (.9, .35);
-\draw (.7, .3) rectangle (.9, .35);
-\node at (.8,.425) {$\bar{Y}$};
-\node at (.8,.325) {$\bar{Y}$};
-}
-\onslide<3-7>{
-\node at (.6,.2) {$M = 0$};
-\draw (.5, .1) rectangle (.7, .3);
-\node at (.6,.05) {$M = 1$};
-\draw (.5, 0) rectangle (.7, .1);
-}
-\onslide<4-7>{
-\draw (.7, .1) rectangle (.9, .3);
-\draw (.7, 0) rectangle (.9, .1);
-\node at (.8,.2) {$\bar{Y}$};
-\node at (.8,.05) {$\bar{Y}$};
-}
-\onslide<5-11>{
-\node at (.7,.85) {$\E(Y^{00}\mid A = 0, Z = 0)$};
-\draw (.5, .7) rectangle (.9, 1);
-}
-\onslide<6-11>{
-\node at (.7,.6) {$\E(Y^{00}\mid A = 0, Z = 1)$};
-\draw (.5, .5) rectangle (.9, .7);
-}
-\onslide<7-12>{
-\node at (.7,.4) {$\E(Y^{10}\mid A = 1, Z = 0)$};
-\draw (.5, .5) rectangle (.9, .3);
-}
-\onslide<8-12>{
-\node at (.7,.15) {$\E(Y^{10}\mid A = 1, Z = 1)$};
-\draw (.5, .3) rectangle (.9, 0);
-}
-\onslide<10-11>{
-\node[align = center, font = \footnotesize] at (.4,.75) {Weighted by\\distribution of\\$Z\mid A = 0$};
-\draw[->, thick] (.425, .85) -- (.475, .9);
-\draw[->, thick] (.425, .65) -- (.475, .6);
-}
-\onslide<11-12>{
-\node[align = center, font = \footnotesize] at (.4,.25) {Weighted by\\distribution of\\$Z\mid A = 1$};
-\draw[->, thick] (.425, .35) -- (.475, .4);
-\draw[->, thick] (.425, .15) -- (.475, .1);
-}
-\onslide<12->{
-\node at (.6,.75) {$\E(Y^{10})$};
-}
-\onslide<13->{
-\node at (.6,.25) {$\E(Y^{00})$};
-}
-\end{tikzpicture}
-\end{frame}
-
 
 \goalsframe
 
