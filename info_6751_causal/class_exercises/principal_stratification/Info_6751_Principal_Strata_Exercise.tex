@@ -58,7 +58,7 @@ These strata are population subgroups that exist before treatment is assigned.
 
 \textbf{Question 1.} What is the causal effect of college on fertility in each of the four strata? \vskip .2in
 
-Note that within strata 1 and 4, $M$ is not post-treatment because it is not caused by $A$. If we could restrict to these strata, we could condition on $M$ without inducing collider bias. This is why principal stratificaton is a helpful idea: it reconceptualizes a post-treatment problem into pre-treatment groups.
+Note that within strata 1 and 2, $M$ is not post-treatment because it is not caused by $A$. If we could restrict to these strata, we could condition on $M$ without inducing collider bias. This is why principal stratificaton is a helpful idea: it reconceptualizes a post-treatment problem into pre-treatment groups.
 
 \begin{center}
 \scalebox{.85}{\begin{tikzpicture}
@@ -201,7 +201,7 @@ Among women who did not complete college & 83\% & 18\% \\
 
 \textbf{Question 8.} Can you identify $\mu^1_1$ with observable data? Fill in an estimate $\hat\mu^1_1$.
 
-\textbf{Question 9.} Identifying $\mu^0_1$ is harder because the moms observed without a college degree are a mix of two strata, and we only want one of those strata. Let $\bar{y}^0$ be the proportion of moms without a college degree whose children completed college. Write a formula for $\bar{y}^0$ as a function of $\mu^0_0,\mu^0_3,\pi_1,\pi_3$.
+\textbf{Question 9.} Identifying $\mu^0_1$ is harder because the moms observed without a college degree are a mix of two strata, and we only want one of those strata. Let $\bar{y}^0$ be the proportion of moms without a college degree whose children completed college. Write a formula for $\bar{y}^0$ as a function of $\mu^0_1,\mu^0_3,\pi_1,\pi_3$.
 
 Rearrange your formula so that the target quantity $\mu^0_1$ is on the left. Which term on the right remains unknown?
 

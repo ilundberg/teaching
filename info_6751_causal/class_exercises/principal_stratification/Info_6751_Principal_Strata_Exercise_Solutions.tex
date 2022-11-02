@@ -66,7 +66,7 @@ These strata are population subgroups that exist before treatment is assigned.
 \item College causes having a child (+1)
 \end{enumerate} %\vskip .2in
 
-Note that within strata 1 and 4, $M$ is not post-treatment because it is not caused by $A$. If we could restrict to these strata, we could condition on $M$ without inducing collider bias. This is why principal stratificaton is a helpful idea: it reconceptualizes a post-treatment problem into pre-treatment groups.
+Note that within strata 1 and 2, $M$ is not post-treatment because it is not caused by $A$. If we could restrict to these strata, we could condition on $M$ without inducing collider bias. This is why principal stratificaton is a helpful idea: it reconceptualizes a post-treatment problem into pre-treatment groups.
 
 \begin{center}
 \scalebox{.85}{\begin{tikzpicture}
@@ -234,7 +234,7 @@ $$\begin{aligned}
 
 \textbf{Answer.} Yes---because $A$ is exchangeable and everyone with $A = 1$ is $S = 1$, this is the observed outcome in that group: $\hat\mu^1_1 = 40\%$.
 
-\textbf{Question 9.} Identifying $\mu^0_1$ is harder because the moms observed without a college degree are a mix of two strata, and we only want one of those strata. Let $\bar{y}^0$ be the proportion of moms without a college degree whose children completed college. Write a formula for $\bar{y}^0$ as a function of $\mu^0_0,\mu^0_3,\pi_1,\pi_3$.
+\textbf{Question 9.} Identifying $\mu^0_1$ is harder because the moms observed without a college degree are a mix of two strata, and we only want one of those strata. Let $\bar{y}^0$ be the proportion of moms without a college degree whose children completed college. Write a formula for $\bar{y}^0$ as a function of $\mu^0_1,\mu^0_3,\pi_1,\pi_3$.
 
 $$\bar{y}^0 = \frac{\pi_1}{\pi_1 + \pi_3}\mu^0_1 + \frac{\pi_3}{\pi_1 + \pi_3}\mu^0_3$$
 
