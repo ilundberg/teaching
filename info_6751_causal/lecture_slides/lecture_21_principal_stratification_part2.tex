@@ -70,13 +70,101 @@ At the end of class, you will be able to:
 \end{enumerate} \vskip .2in
 \end{frame}}
 
-\title{20. Principal Stratification (Part 2)}
+\title{21. Principal Stratification (Part 2)}
 \author{Ian Lundberg\\Cornell Info 6751: Causal Inference in Observational Settings\\Fall 2022}
 \date{3 Nov 2022}
 
 \begin{document}
 
 \maketitle
+
+\goalsframe
+
+\begin{frame}{Wrapping up the class exercise: Question 6}{Size of the stratum who have a child regardless of college} \pause
+Among those who finish college ($A = 1$),\\
+having a child ($M = 1$) is the same as\\
+being in the always-child stratum ($S = 1$) \vskip .1in \pause
+$$\begin{aligned}
+\P(M = 1 \mid A = 1) = \P(S = 1 \mid A = 1)
+\end{aligned}$$ \pause
+We are assuming $A$ is randomly assigned, so
+$$\P(S = 1\mid A = 1) = \P(S = 1)$$ \pause
+So $\P(S = 1)$ equals the motherhood rate\\among college women: 0.71
+\end{frame}
+
+\begin{frame}{Wrapping up the class exercise: Question 7}{Size of the stratum who have a child only if no college} \pause
+Among those who do not finish college ($A = 0$),\\
+having a child ($M = 1$) is equivalent to being in either\\
+the always-child stratum ($S = 1$) or\\
+the child-if-no-college stratum ($S = 3$)\\
+ \vskip .1in
+$$\begin{aligned}
+\P(M = 1 \mid A = 0) = \P(S \in \{1,3\} \mid A = 1)
+\end{aligned}$$ \pause
+We are assuming $A$ is randomly assigned, so
+$$\P(S = \in \{1,3\}\mid A = 0) = \P(S = \in \{1,3\})$$ \pause
+So $\P(S \in \{1,3\})$ equals the motherhood rate\\among non-college women: 0.83 \vskip .1in \pause
+Estimate $\P(S = 3) = \P(S\in \{1,3\}) - \P(S = 1) = .83 - .71 = .12$
+\end{frame}
+
+\begin{frame}{Wrapping up the class exercise: Question 8}{Child outcome under mother college, in the always-child stratum} \pause
+
+$$\begin{aligned}
+\mu^1_1 &= \E(Y^1\mid S = 1) \\ \pause
+&= \E(Y\mid A = 1, S = 1) &\text{exchangeability} \\ \pause
+&= \E(Y\mid A =1) &\text{monotonicity} \\ \pause
+&= 0.40
+\end{aligned}$$
+
+\end{frame}
+
+\begin{frame}{Wrapping up the class exercise: Question 9}{Child outcome under mother no college, in the always-child stratum} \pause
+To identify $\mu^0_1$, first write a formula for $\bar{y}^0$: the mean outcome among non-college women. \vskip .2in \pause
+That is a weighted average of outcomes among strata 1 and 3.
+$$\begin{aligned}\overbrace{\frac{\pi_1}{\pi_1 + \pi_3}}^{\substack{\text{Proportion}\\\text{in $S = 1$}}}\mu^0_1 + \overbrace{\frac{\pi_3}{\pi_1 + \pi_3}}^{\substack{\text{Proportion}\\\text{in $S = 3$}}}\mu^0_3 &= \overbrace{\bar{y}^0}^{\substack{\text{Mean outcome among}\\\text{non-college mothers}}} \\ \pause
+\\
+\text{Rearrange to solve for }\mu^0_1&\\ \pause
+\frac{\pi_1}{\pi_1 + \pi_3}\mu^0_1 &= \bar{y}^0 - \frac{\pi_3}{\pi_1 + \pi_3}\mu^0_3 \\ \pause
+\mu^0_1 &= \frac{\pi_1 + \pi_3}{\pi_1}\left(\bar{y}^0 - \frac{\pi_3}{\pi_1 + \pi_3}\mu^0_3\right)
+\end{aligned}$$
+\end{frame}
+
+\begin{frame}{Wrapping up the class exercise: Question 10}{Child outcome under mother no college, in the always-child stratum}
+$$\mu^0_1 = \frac{\pi_1 + \pi_3}{\pi_1}\left(\bar{y}^0 - \frac{\pi_3}{\pi_1 + \pi_3}\textcolor{blue}{\mu^0_3}\right)$$ \pause
+The only unknown term is $\blue{\mu^0_3}$. We can bound it. \pause
+$$\begin{aligned}
+\hat\mu^{0,\text{Upper}}_1 &= \frac{.71 + .12}{.71}\left(.18 - \frac{.12}{.71 + .12}\textcolor{blue}{\mathbf{1}}\right) = .04  \\ \pause
+\hat\mu^{0,\text{Lower}}_1 &= \frac{.71 + .12}{.71}\left(.18 - \frac{.12}{.71 + .12}\textcolor{blue}{\mathbf{0}}\right) = .21
+\end{aligned}$$
+
+\end{frame}
+
+\begin{frame}{Wrapping up the class exercise: Question 10}{Set identification for the causal effect} \pause
+The causal effect estimate is set-identified by
+$$
+\begin{aligned}
+\hat\tau_1^\text{Lower} &= \hat\mu^1_1 - \hat\mu^{0,\text{Upper}}_1 &= .40 - .21 &= .19 \\
+\hat\tau_1^\text{Upper} &= \hat\mu^1_1 - \hat\mu^{0,\text{Lower}}_1 &= .40 - .04 &= .36
+\end{aligned}
+$$ \vskip .2in \pause
+
+Among women who would have a child\hfill \textcolor{gray}{stratum-}\\regardless of their own education,\hfill\textcolor{gray}{specific}\vskip .1in \pause
+the effect of a mother finishing college \hfill\textcolor{gray}{causal} \\
+on the probability that her child finishes college \hfill\textcolor{gray}{effect} \vskip .1in \pause 
+is somewhere between 0.19 and 0.36.\footnote{(This is of course subject to the doubtful assumptions made in the problem, but even under those strong assumptions the interval is very wide.)}\hfill\textcolor{gray}{set-identified}
+
+\end{frame}
+
+\begin{frame}
+Big picture ideas in this exercise \vskip .1in \pause
+\begin{itemize}
+\item Principal stratification solved a hard problem
+\begin{itemize}
+\item A mediator that can render an outcome undefined \pause
+\end{itemize}
+\item You can bound estimates by assuming monotonicity\\(and applying lots of algebra)
+\end{itemize}
+\end{frame}
 
 \goalsframe
 
