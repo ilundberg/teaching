@@ -1,0 +1,38 @@
+\documentclass[10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{parskip}
+\usepackage[margin = 1in]{geometry}
+\usepackage{xcolor}
+\usepackage[colorlinks = true,linkcolor = blue, urlcolor  = blue,citecolor = blue,anchorcolor = blue]{hyperref}
+\usepackage{framed}
+\usepackage{apacite}
+\usepackage[authoryear,sort]{natbib}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\bibliographystyle{apalike}
+\newcommand{\E}{\textrm{E}}
+\newcommand\bref[2]{\href{#1}{\color{blue}{#2}}}
+%\renewcommand*{\theenumi}{\thesection.\arabic{enumi}}
+\renewcommand{\P}{\text{P}}
+\usepackage{tikz}
+\usetikzlibrary{arrows,shapes.arrows,positioning,shapes,patterns,calc}
+
+\begin{document}
+
+\begin{Large} 
+Info 6751. Fall 2022. Problem Set 11. Due on Canvas by 5pm on 14 Nov.
+\end{Large}
+\hline \vskip .1in
+
+Note: This assignment is brief so you can work on your research proposal.
+
+\begin{enumerate}
+\item (10 points) On Nov 17, \bref{https://sociology.wisc.edu/staff/elwert-felix-2/}{Felix Elwert} (Professor of Sociology, University of Wisconsin---Madison) will be visiting our class. Professor Elwert is a leading scholar in causal inference and among many things has written the paper we read that applies \bref{https://doi.org/10.1177/0003122411420816}{marginal structural models}, a widely-read review paper on \bref{https://www.annualreviews.org/doi/full/10.1146/annurev-soc-071913-043455}{collider variables}, a terrific \bref{https://link.springer.com/chapter/10.1007/978-94-007-6094-3_13}{introduction to DAGs}, and demography papers on topics including \bref{https://doi.org/10.1086/660009}{multigenerational mobility} and \bref{https://journals.sagepub.com/doi/abs/10.1177/000312240607100102}{marriage}. He is editor of \emph{Sociological Methods and Research} and associate editor of the \emph{Journal of Causal Inference}. While he is here, I intend to allow some time for us to ask him questions about causal inference, methodology, or anything you'd like to talk about. What (if anything) would you like to know from him? (I won't put you on the spot to ask the question---I'm just collecting general interests here)
+\item (10 points) An epidemiologist uses data on the period before COVID-19 to build a model that forecasts mortality rates. Then, they compare the forecasted rates to the observed rates during COVID-19 to estimate the causal effect of COVID-19 on mortality. Is this an example of difference in difference, regression discontinuity, interrupted time series, or synthetic control?
+\item (10 points) A colleague tells you they've read that regression discontinuity designs have proven that winning one election (greater than 50\% of the vote) causes a political party to have better chances in the next election. In your district, the winner won with 70\% of the vote. Why isn't the regression discontinuity evidence very informative for districts like yours?
+\item (10 points) A skeptic claims that randomization is essential to all causal claims. To show that causal inference is still possible when the treatment is assigned as a deterministic function of a variable $X$, explain the assumptions of regression discontinuity to the skeptic, using the continuity framework.
+\item (10 points) Can we test the parallel trends assumption of difference in difference? Why or why not?
+\end{enumerate}
+
+\end{document}
+
