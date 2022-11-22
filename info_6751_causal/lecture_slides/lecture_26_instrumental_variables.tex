@@ -374,10 +374,9 @@ Rearrange to get the complier average treatment effect
 }
 \end{frame}
 
-\begin{frame}{Instrumental variables: 2) Average effect among compliers}
+\begin{frame}{Three assumptions that make IV work}
 
-\begin{center}
-\scalebox{.4}{\begin{tikzpicture}[x = 1in, y = .5in]
+\begin{tikzpicture}
     \node (z) at (-1,0) {$Z$};
     \node (a) at (0,0) {$A$};
     \node (y) at  (1,0) {$Y$};
@@ -385,32 +384,16 @@ Rearrange to get the complier average treatment effect
     \draw[->, >=stealth, thick] (z) -- (a);
     \draw[->, >=stealth, thick] (a) --  (y);
     \draw[->, >=stealth, thick] (u) --  (a);
-    \draw[->, >=stealth, thick] (u) --  (y);
-    \node[anchor = south, align = center, font = \footnotesize] at (z.north) {Randomized\\to drug or\\placebo};
-    \node[anchor = south, align = center, font = \footnotesize] at (a.north) {Actually\\takes drug or\\placebo};
-    \node[anchor = south, align = center, font = \footnotesize] at (y.north) {Health\\outcome};
-    \node[anchor = north, align = center, font = \footnotesize] at (u.south) {Inclination\\to comply};
-    \node[anchor = north, font = \bf, gray] at (-1,1.8) {Instrument};
-    \node[anchor = north, font = \bf, gray] at (0,1.8) {Treatment};
-    \node[anchor = north, font = \bf, gray] at (1,1.8) {Outcome};
-  \end{tikzpicture}}
-\end{center}
+    \draw[->, >=stealth, thick] (u) --  (y); \pause
+    \node[red] (v) at (-2,0) {$V$};
+    \draw[->, thick, red, dashed] (v) -- (z);
+    \draw[->, thick, red, dashed] (v) to[out = 270, in = 180] (-.5,-1.5) to[out = 0, in = 270] (y);
+    \node[anchor = north, red, font = \footnotesize, align = center] at (-.5,-1.5) {\textbf{Exogeneity}:\\Instrument must be\\unconfounded\\(this path cannot exist)}; \pause
+    \draw[->, thick, red, dashed] (z) to[bend left] node[midway, above, font = \footnotesize, align = center] {\textbf{Exclusion Restriction:}\\Instrument must affect\\outcome only through\\treatment\\(this edge cannot exist)} (y); \pause
+    \node[anchor = west, align = left, red, font = \footnotesize] at (2.5,0) {\textbf{Monotonicity:}\\Instrument must affect\\treatment in the same\\direction for everyone}; \pause
+    \node[anchor = north west, font = \footnotesize, align = left] at (2.5,-1.5) {Given these three assumptions,\\the average effect among compliers\\is identified by\\$\E(Y^{A=1}-Y^{A=0}\mid S = \text{Complier})$\\{}\\$= \frac{\E(Y^{Z = 1} - Y^{Z = 0})}{\E(A^{Z = 1} - A^{Z = 0})}\qquad\quad {\leftarrow \text{Effect of $Z$ on $Y$}\atop \leftarrow\text{Effect of $Z$ on $A$}}$\\{}\\$=\frac{E(Y\mid Z = 1) - \E(Y\mid Z = 0)}{\E(A\mid Z = 1) - \E(A\mid Z = 0)} $};
+\end{tikzpicture}
 
-\begin{small}
-Summary: Average treatment effect among compliers
-\begin{enumerate}
-\item Estimate the average effect of $Z$ on $Y$
-\item Estimate the average effect of $Z$ on $A$
-\item Divide (1) by (2)
-\end{enumerate} \vskip .1in
-Assumptions that got us there:
-\begin{enumerate}
-\item Instrument $Z$ is unconfounded \hfill (exogeneity)
-\item $Z\rightarrow Y$ is entirely mediated by $M$ \hfill (exclusion restriction)
-\item No defiers \hfill (monotonicity)
-\end{enumerate}
-where (3) is an assumption outside of the DAG
-\end{small}
 \end{frame}
 
 \begin{frame}{Two equivalent estimators} \pause
@@ -591,11 +574,14 @@ From Table 1 in Felton, C., \& Stewart, B. M. (2022). Working paper. \bref{https
 
 \begin{frame}{Summary}
 
-Instrumental variables requires strong assumptions \vskip .1in
+Instrumental variable estimation requires strong assumptions \vskip .1in
 \begin{itemize}
-\item Exogenous instrument \hfill (e.g., randomization)
-\item Mediated fully through the treatment 
-\item Under monotonicity \hfill (e.g., no defiers)
+\item \bgray{Exogeneity:} Instrument is unconfounded \vskip .05in
+\item \bgray{Exclusion:} Instrument effect on outcome is mediated fully through the treatment  \vskip .05in
+\item \bgray{Monotonicity:} Instrument affects treatment in the same direction for everyone
+\begin{itemize}
+\item Example: No defiers
+\end{itemize}
 \end{itemize} \vskip .1in
 Works well in randomized studies with noncompliance.\vskip .3in
 
@@ -607,10 +593,32 @@ Usefulness depends on how close it is to that ideal.
 
 \begin{frame}{Complications we have not addressed today}
 \begin{itemize}
-\item Proxy instruments
 \item Non-binary instruments
 \item Non-binary treatments
+\item Proxy instruments
 \end{itemize}
+\begin{center}
+\begin{tikzpicture}[x = 1in, y = .5in]
+    \node (z) at (-1,0) {$Z$};
+    \node (a) at (0,0) {$A$};
+    \node (y) at  (1,0) {$Y$};
+    \node (u) at  (0,-1) {$U$};
+    \draw[->, >=stealth, thick] (z) -- (a);
+    \draw[->, >=stealth, thick] (a) --  (y);
+    \draw[->, >=stealth, thick] (u) --  (a);
+    \draw[->, >=stealth, thick] (u) --  (y);
+    \node[anchor = south, align = center, font = \footnotesize] at (z.north) {Randomized\\to drug or\\placebo};
+    \node[anchor = south, align = center, font = \footnotesize] at (a.north) {Actually\\takes drug or\\placebo};
+    \node[anchor = south, align = center, font = \footnotesize] at (y.north) {Health\\outcome};
+    \node[anchor = north, align = center, font = \footnotesize] at (u.south) {Inclination\\to comply};
+    	\node[anchor = north, font = \bf, gray] at (-1,1.8) {Instrument};
+    	\node[anchor = north, font = \bf, gray] at (0,1.8) {Treatment};
+    	\node[anchor = north, font = \bf, gray] at (1,1.8) {Outcome};
+    \node (ztilde) at (-1,-1) {$\tilde{Z}$};
+    \node[anchor = north, align = center, font = \footnotesize] at (ztilde.south) {Self-reported\\treatment\\assignment\\{}\\\begin{normalsize}\bgray{Proxy}\end{normalsize}};
+    \draw[->, thick] (z) -- (ztilde);
+  \end{tikzpicture}
+\end{center}
 \end{frame}
 
 \goalsframe
