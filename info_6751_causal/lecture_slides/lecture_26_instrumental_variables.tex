@@ -207,10 +207,10 @@ Imbens, G., \& Angrist, J. (1994). \bref{https://www.nber.org/papers/t0118}{Iden
 \end{center} \pause
 The effect $Z\rightarrow A$ has four \bblue{principal strata}:\\latent sets of people who respond to $Z$ a particular way \pause
 $$\begin{aligned}
-\text{Compliers}\qquad & Z^0 = 0 & Z^1 = 1&\qquad\text{(follow assignment)} \\ \pause
-\text{Always takers}\qquad & Z^0 = 1 & Z^1 = 1&\qquad\text{(always take treatment)} \\ \pause
-\text{Never takers}\qquad & Z^0 = 0 & Z^1 = 0&\qquad\text{(never take treatment)} \\ \pause
-\text{Defiers}\qquad & Z^0 = 1 & Z^1 = 0 &\qquad\text{(defy assignment)}
+\text{Compliers}\qquad & A^{Z=0} = 0 & A^{Z=1} = 1&\qquad\text{(follow assignment)} \\ \pause
+\text{Always takers}\qquad & A^{Z=0} = 1 & A^{Z=1} = 1&\qquad\text{(always take treatment)} \\ \pause
+\text{Never takers}\qquad & A^{Z=0} = 0 & A^{Z=1} = 0&\qquad\text{(never take treatment)} \\ \pause
+\text{Defiers}\qquad & A^{Z=0} = 1 & A^{Z=1} = 0 &\qquad\text{(defy assignment)}
 \end{aligned}$$ \pause
 \bgray{Discuss:} In which strata is the effect $Z\rightarrow Y$ zero?
 \end{frame}
@@ -289,7 +289,7 @@ $Z\rightarrow Y$ and $A\rightarrow Y$ are the same
 \end{center}
 Among \bgray{defiers}, \pause \\
 $Z = 1$ implies $A = 0$ and\\$Z = 0$ implies $A = 1$ \pause \vskip .1in
-In these strata, $Z = -A$ \pause \vskip .1in
+In these strata, $Z = 1-A$ \pause \vskip .1in
 $Z\rightarrow Y$ and $A\rightarrow Y$ are the same magnitude\\but have opposite signs
 \end{frame}
 
