@@ -1,0 +1,629 @@
+
+\documentclass{beamer}
+\usecolortheme{dove}
+\setbeamertemplate{navigation symbols}{}
+\usepackage{amsmath,amssymb,amsfonts,amsthm, multicol, subfigure, color}
+\usepackage{bm}
+\usepackage{graphicx}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{pdfpages}
+\usepackage{xcolor}
+\definecolor{seagreen}{RGB}{46, 139, 87}
+\def\independenT#1#2{\mathrel{\rlap{$#1#2$}\mkern2mu{#1#2}}}
+\newcommand\indep{\protect\mathpalette{\protect\independenT}{\perp}}
+\def\log{\text{log}}
+\newcommand\logit{\text{logit}}
+\newcommand\iid{\stackrel{\text{iid}}{\sim}}
+\newcommand\E{\text{E}}
+\newcommand\V{\text{V}}
+\renewcommand\P{\text{P}}
+\newcommand{\Cov}{\text{Cov}}
+\newcommand{\Cor}{\text{Cor}}
+\newcommand\doop{\texttt{do}}
+\usepackage{stackrel}
+\usepackage{tikz}
+\usetikzlibrary{arrows,shapes.arrows,positioning,shapes,patterns,calc}
+\newcommand\slideref[1]{\vskip .1cm \tiny \textcolor{gray}{{#1}}}
+\newcommand\red[1]{\color{red}#1}
+\newcommand\blue[1]{\color{blue}#1}
+\newcommand\gray[1]{\color{gray}#1}
+\newcommand\seagreen[1]{\color{seagreen}#1}
+\newcommand\purple[1]{\color{purple}#1}
+\newcommand\orange[1]{\color{orange}#1}
+\newcommand\black[1]{\color{black}#1}
+\newcommand\white[1]{\color{white}#1}
+\newcommand\teal[1]{\color{teal}#1}
+\newcommand\magenta[1]{\color{magenta}#1}
+\newcommand\Fuchsia[1]{\color{Fuchsia}#1}
+\newcommand\BlueGreen[1]{\color{BlueGreen}#1}
+\newcommand\bblue[1]{\textcolor{blue}{\textbf{#1}}}
+\newcommand\bred[1]{\textcolor{red}{\textbf{#1}}}
+\newcommand\bgray[1]{\textcolor{gray}{\textbf{#1}}}
+\newcommand\bgreen[1]{\textcolor{seagreen}{\textbf{#1}}}
+\newcommand\bref[2]{\href{#1}{\color{blue}{#2}}}
+\colorlet{lightgray}{gray!40}
+\pgfdeclarelayer{bg}    % declare background layer for tikz
+\pgfsetlayers{bg,main} % order layers for tikz
+\newcommand\mycite[1]{\begin{scriptsize}\textcolor{darkgray}{(#1)}\end{scriptsize}}
+\newcommand{\tcframe}{\frame{
+%\small{
+\only<1|handout:0>{\tableofcontents}
+\only<2|handout:1>{\tableofcontents[currentsubsection]}}
+%}
+}
+
+\usepackage[round]{natbib}
+\bibliographystyle{humannat-mod}
+\setbeamertemplate{enumerate items}[default]
+\usepackage{mathtools}
+\usepackage{ulem}
+\usepackage{cancel}
+
+% Need to add examples
+
+\newcommand{\goalsframe}{\begin{frame}{Learning goals for today}
+At the end of class, you will be able to:
+\begin{enumerate}
+\item Understand the logic of instrumental variables
+\item Derive the average effect among compliers in experiments with noncompliance
+\item Recognize the pitfalls of IVs in observational settings
+\end{enumerate} \vskip .2in
+\end{frame}}
+
+\title{26. Instrumental variables}
+\author{Ian Lundberg\\Cornell Info 6751: Causal Inference in Observational Settings\\Fall 2022}
+\date{22 Nov 2022}
+
+\begin{document}
+
+\maketitle
+
+\goalsframe
+
+
+\begin{frame}[t]{Instrumental variables: Experiment with noncompliance} \vskip .25in
+\begin{center}
+\begin{tikzpicture}[x = 1in, y = .5in]
+    \node (z) at (-1,0) {$Z$};
+    \node (a) at (0,0) {$A$};
+    \node (y) at  (1,0) {$Y$};
+    \node (u) at  (0,-1) {$U$};
+    \draw[->, >=stealth, thick] (z) -- (a);
+    \draw[->, >=stealth, thick] (a) --  (y);
+    \draw[->, >=stealth, thick] (u) --  (a);
+    \draw[->, >=stealth, thick] (u) --  (y);
+    \node[anchor = south, align = center, font = \footnotesize] at (z.north) {Randomized\\to drug or\\placebo};
+    \node[anchor = south, align = center, font = \footnotesize] at (a.north) {Actually\\takes drug or\\placebo};
+    \node[anchor = south, align = center, font = \footnotesize] at (y.north) {Health\\outcome};
+    \node[anchor = north, align = center, font = \footnotesize] at (u.south) {Inclination\\to comply};
+    \onslide<2->{
+    	\node[anchor = north, font = \bf, gray] at (-1,1.8) {Instrument};
+    	\node[anchor = north, font = \bf, gray] at (0,1.8) {Treatment};
+    	\node[anchor = north, font = \bf, gray] at (1,1.8) {Outcome};
+    }
+  \end{tikzpicture}
+\end{center}
+\onslide<3->{
+Two ideas
+\begin{enumerate}
+\item Intent to treat effect
+\item Average effect among compliers
+\end{enumerate}
+}
+\end{frame}
+
+\begin{frame}[t]{Instrumental variables: 1) Intent to treat effect} \vskip .1in
+\begin{center}
+\begin{tikzpicture}[x = 1in, y = .5in]
+    \node (z) at (-1,0) {$Z$};
+    \node (a) at (0,0) {$A$};
+    \node (y) at  (1,0) {$Y$};
+    \node (u) at  (0,-1) {$U$};
+    \draw[->, >=stealth, thick] (z) -- (a);
+    \draw[->, >=stealth, thick] (a) --  (y);
+    \draw[->, >=stealth, thick] (u) --  (a);
+    \draw[->, >=stealth, thick] (u) --  (y);
+    \node[anchor = south, align = center, font = \footnotesize] at (z.north) {Randomized\\to drug or\\placebo};
+    \node[anchor = south, align = center, font = \footnotesize] at (a.north) {Actually\\takes drug or\\placebo};
+    \node[anchor = south, align = center, font = \footnotesize] at (y.north) {Health\\outcome};
+    \node[anchor = north, align = center, font = \footnotesize] at (u.south) {Inclination\\to comply};
+    \node[anchor = north, font = \bf, gray] at (-1,1.8) {Instrument};
+    \node[anchor = north, font = \bf, gray] at (0,1.8) {Treatment};
+    \node[anchor = north, font = \bf, gray] at (1,1.8) {Outcome};
+  \end{tikzpicture}
+\end{center} \pause
+Ignore $A$. What is the effect of $Z$ on $Y$?
+\begin{center}
+\begin{tikzpicture} \pause
+\node at (-2.5,0) {$\E(Y^1 - Y^0)$};
+\node[anchor = north, font = \scriptsize, gray, align = center] at (-3.3,-.5) {Outcome\\under\\$Z = 1$};
+\node[anchor = north, font = \scriptsize, gray, align = center] at (-1.7,-.5) {Outcome\\under\\$Z = 0$};
+\draw[->, thick, gray] (-3.1,-.5) -- (-3,-.3);
+\draw[->, thick, gray] (-1.9,-.5) -- (-2,-.3);
+\pause
+\node at (0,0) {$=$};
+\node[anchor = north, font = \tiny, gray, align = center] at (0,-.3) {By\\Positivity\\Consistency\\Exchangeability\\for $Z$};
+\draw[->, thick, gray] (0,-.3) -- (0,-.15);
+\pause
+\node at (4,0) {$\E(Y\mid Z = 1) - \E(Y\mid Z = 0)$};
+\node[anchor = north, font = \scriptsize, gray, align = center] at (4,-.3) {Mean difference in\\observable outcomes};
+\end{tikzpicture}
+\end{center}
+\end{frame}
+
+\begin{frame}[t]{Instrumental variables: 2) Average effect among compliers} \vskip .5in
+Imbens, G., \& Angrist, J. (1994). \bref{https://www.nber.org/papers/t0118}{Identification and estimation of local average treatment effects.} Econometrica, 62(2), 467-475.
+\end{frame}
+
+\begin{frame}[t]{Instrumental variables: 2) Average effect among compliers} \vskip .1in
+\begin{center}
+\begin{tikzpicture}[x = 1in, y = .5in]
+    \node (z) at (-1,0) {$Z$};
+    \node (a) at (0,0) {$A$};
+    \node (y) at  (1,0) {$Y$};
+    \node (u) at  (0,-1) {$U$};
+    \draw[->, >=stealth, thick] (z) -- (a);
+    \draw[->, >=stealth, thick] (a) --  (y);
+    \draw[->, >=stealth, thick] (u) --  (a);
+    \draw[->, >=stealth, thick] (u) --  (y);
+    \node[anchor = south, align = center, font = \footnotesize] at (z.north) {Randomized\\to drug or\\placebo};
+    \node[anchor = south, align = center, font = \footnotesize] at (a.north) {Actually\\takes drug or\\placebo};
+    \node[anchor = south, align = center, font = \footnotesize] at (y.north) {Health\\outcome};
+    \node[anchor = north, align = center, font = \footnotesize] at (u.south) {Inclination\\to comply};
+    \node[anchor = north, font = \bf, gray] at (-1,1.8) {Instrument};
+    \node[anchor = north, font = \bf, gray] at (0,1.8) {Treatment};
+    \node[anchor = north, font = \bf, gray] at (1,1.8) {Outcome};
+  \end{tikzpicture}
+\end{center} \pause
+\bblue{Key insight}: The effect of $Z$ on $Y$ operates entirely through $A$
+\begin{enumerate} \pause
+\item Study the effect of $Z\rightarrow Y$ \hfill \pause (we just did) \pause
+\item Study the effect of $Z\rightarrow A$ \pause
+\item Learn about $A \rightarrow Y$ since $Z\rightarrow Y$ is $Z\rightarrow A \rightarrow Y$
+\end{enumerate}
+\end{frame}
+
+\begin{frame}[t]{Instrumental variables: 2) Average effect among compliers} \vskip .1in
+\begin{center}
+\scalebox{.4}{\begin{tikzpicture}[x = 1in, y = .5in]
+    \node (z) at (-1,0) {$Z$};
+    \node (a) at (0,0) {$A$};
+    \node (y) at  (1,0) {$Y$};
+    \node (u) at  (0,-1) {$U$};
+    \draw[->, >=stealth, thick] (z) -- (a);
+    \draw[->, >=stealth, thick] (a) --  (y);
+    \draw[->, >=stealth, thick] (u) --  (a);
+    \draw[->, >=stealth, thick] (u) --  (y);
+    \node[anchor = south, align = center, font = \footnotesize] at (z.north) {Randomized\\to drug or\\placebo};
+    \node[anchor = south, align = center, font = \footnotesize] at (a.north) {Actually\\takes drug or\\placebo};
+    \node[anchor = south, align = center, font = \footnotesize] at (y.north) {Health\\outcome};
+    \node[anchor = north, align = center, font = \footnotesize] at (u.south) {Inclination\\to comply};
+    \node[anchor = north, font = \bf, gray] at (-1,1.8) {Instrument};
+    \node[anchor = north, font = \bf, gray] at (0,1.8) {Treatment};
+    \node[anchor = north, font = \bf, gray] at (1,1.8) {Outcome};
+  \end{tikzpicture}}
+\end{center} \pause
+The effect $Z\rightarrow A$ has four \bblue{principal strata}:\\latent sets of people who respond to $Z$ a particular way \pause
+$$\begin{aligned}
+\text{Compliers}\qquad & Z^0 = 0 & Z^1 = 1&\qquad\text{(follow assignment)} \\ \pause
+\text{Always takers}\qquad & Z^0 = 1 & Z^1 = 1&\qquad\text{(always take treatment)} \\ \pause
+\text{Never takers}\qquad & Z^0 = 0 & Z^1 = 0&\qquad\text{(never take treatment)} \\ \pause
+\text{Defiers}\qquad & Z^0 = 1 & Z^1 = 0 &\qquad\text{(defy assignment)}
+\end{aligned}$$ \pause
+\bgray{Discuss:} In which strata is the effect $Z\rightarrow Y$ zero?
+\end{frame}
+
+\begin{frame}[t]{Instrumental variables: 2) Average effect among compliers} \vskip .1in
+\begin{center}
+\scalebox{.4}{\begin{tikzpicture}[x = 1in, y = .5in]
+    \node (z) at (-1,0) {$Z$};
+    \node (a) at (0,0) {$A$};
+    \node (y) at  (1,0) {$Y$};
+    \node (u) at  (0,-1) {$U$};
+    \draw[->, >=stealth, thick] (z) -- (a);
+    \draw[->, >=stealth, thick] (a) --  (y);
+    \draw[->, >=stealth, thick] (u) --  (a);
+    \draw[->, >=stealth, thick] (u) --  (y);
+    \node[anchor = south, align = center, font = \footnotesize] at (z.north) {Randomized\\to drug or\\placebo};
+    \node[anchor = south, align = center, font = \footnotesize] at (a.north) {Actually\\takes drug or\\placebo};
+    \node[anchor = south, align = center, font = \footnotesize] at (y.north) {Health\\outcome};
+    \node[anchor = north, align = center, font = \footnotesize] at (u.south) {Inclination\\to comply};
+    \node[anchor = north, font = \bf, gray] at (-1,1.8) {Instrument};
+    \node[anchor = north, font = \bf, gray] at (0,1.8) {Treatment};
+    \node[anchor = north, font = \bf, gray] at (1,1.8) {Outcome};
+  \end{tikzpicture}}
+\end{center}
+Among \bgray{always takers} and \bgray{never takers},\\ \pause
+$Z$ does not affect $A$ \pause \vskip .1in
+$Z$ only affects $Y$ through $A$ \pause \vskip .1in
+In these strata, $Z$ does not affect $Y$
+\end{frame}
+
+\begin{frame}[t]{Instrumental variables: 2) Average effect among compliers} \vskip .1in
+\begin{center}
+\scalebox{.4}{\begin{tikzpicture}[x = 1in, y = .5in]
+    \node (z) at (-1,0) {$Z$};
+    \node (a) at (0,0) {$A$};
+    \node (y) at  (1,0) {$Y$};
+    \node (u) at  (0,-1) {$U$};
+    \draw[->, >=stealth, thick] (z) -- (a);
+    \draw[->, >=stealth, thick] (a) --  (y);
+    \draw[->, >=stealth, thick] (u) --  (a);
+    \draw[->, >=stealth, thick] (u) --  (y);
+    \node[anchor = south, align = center, font = \footnotesize] at (z.north) {Randomized\\to drug or\\placebo};
+    \node[anchor = south, align = center, font = \footnotesize] at (a.north) {Actually\\takes drug or\\placebo};
+    \node[anchor = south, align = center, font = \footnotesize] at (y.north) {Health\\outcome};
+    \node[anchor = north, align = center, font = \footnotesize] at (u.south) {Inclination\\to comply};
+    \node[anchor = north, font = \bf, gray] at (-1,1.8) {Instrument};
+    \node[anchor = north, font = \bf, gray] at (0,1.8) {Treatment};
+    \node[anchor = north, font = \bf, gray] at (1,1.8) {Outcome};
+  \end{tikzpicture}}
+\end{center}
+Among \bgray{compliers}, \pause \\
+$Z = 1$ implies $A = 1$ and\\$Z = 0$ implies $A = 0$ \pause \vskip .1in
+In these strata, $Z = A$ \pause \vskip .1in
+$Z\rightarrow Y$ and $A\rightarrow Y$ are the same
+\end{frame}
+
+\begin{frame}[t]{Instrumental variables: 2) Average effect among compliers} \vskip .1in
+\begin{center}
+\scalebox{.4}{\begin{tikzpicture}[x = 1in, y = .5in]
+    \node (z) at (-1,0) {$Z$};
+    \node (a) at (0,0) {$A$};
+    \node (y) at  (1,0) {$Y$};
+    \node (u) at  (0,-1) {$U$};
+    \draw[->, >=stealth, thick] (z) -- (a);
+    \draw[->, >=stealth, thick] (a) --  (y);
+    \draw[->, >=stealth, thick] (u) --  (a);
+    \draw[->, >=stealth, thick] (u) --  (y);
+    \node[anchor = south, align = center, font = \footnotesize] at (z.north) {Randomized\\to drug or\\placebo};
+    \node[anchor = south, align = center, font = \footnotesize] at (a.north) {Actually\\takes drug or\\placebo};
+    \node[anchor = south, align = center, font = \footnotesize] at (y.north) {Health\\outcome};
+    \node[anchor = north, align = center, font = \footnotesize] at (u.south) {Inclination\\to comply};
+    \node[anchor = north, font = \bf, gray] at (-1,1.8) {Instrument};
+    \node[anchor = north, font = \bf, gray] at (0,1.8) {Treatment};
+    \node[anchor = north, font = \bf, gray] at (1,1.8) {Outcome};
+  \end{tikzpicture}}
+\end{center}
+Among \bgray{defiers}, \pause \\
+$Z = 1$ implies $A = 0$ and\\$Z = 0$ implies $A = 1$ \pause \vskip .1in
+In these strata, $Z = -A$ \pause \vskip .1in
+$Z\rightarrow Y$ and $A\rightarrow Y$ are the same magnitude\\but have opposite signs
+\end{frame}
+
+\begin{frame}[t]{Instrumental variables: 2) Average effect among compliers} \vskip .1in
+\begin{center}
+\scalebox{.4}{\begin{tikzpicture}[x = 1in, y = .5in]
+    \node (z) at (-1,0) {$Z$};
+    \node (a) at (0,0) {$A$};
+    \node (y) at  (1,0) {$Y$};
+    \node (u) at  (0,-1) {$U$};
+    \draw[->, >=stealth, thick] (z) -- (a);
+    \draw[->, >=stealth, thick] (a) --  (y);
+    \draw[->, >=stealth, thick] (u) --  (a);
+    \draw[->, >=stealth, thick] (u) --  (y);
+    \node[anchor = south, align = center, font = \footnotesize] at (z.north) {Randomized\\to drug or\\placebo};
+    \node[anchor = south, align = center, font = \footnotesize] at (a.north) {Actually\\takes drug or\\placebo};
+    \node[anchor = south, align = center, font = \footnotesize] at (y.north) {Health\\outcome};
+    \node[anchor = north, align = center, font = \footnotesize] at (u.south) {Inclination\\to comply};
+    \node[anchor = north, font = \bf, gray] at (-1,1.8) {Instrument};
+    \node[anchor = north, font = \bf, gray] at (0,1.8) {Treatment};
+    \node[anchor = north, font = \bf, gray] at (1,1.8) {Outcome};
+  \end{tikzpicture}}
+\end{center}
+Four principal strata
+$$\begin{aligned}
+\text{Compliers} \qquad& (Z\rightarrow A) = +1\quad&& (Z\rightarrow Y) = (A\rightarrow Y)\phantom{-} \\
+\text{Always takers} \qquad& (Z\rightarrow A) = 0&& (Z\rightarrow Y) = 0 \\
+\text{Never takers} \qquad& (Z\rightarrow A) = 0&& (Z\rightarrow Y) = 0 \only<1-2>{\\}
+\only<1>{\text{Defiers} \qquad& (Z\rightarrow A) = -1&& (Z\rightarrow Y) = -(A\rightarrow Y)}
+\only<2>{\gray{\text{Defiers}} \qquad& \gray{(Z\rightarrow A) = -1}&& \gray{(Z\rightarrow Y) = -(A\rightarrow Y)}}
+\end{aligned}$$
+\only<2>{Assume \bblue{no defiers} in the population}
+
+\onslide<4->{\bgray{Discuss a hypothetical.}}\\
+\onslide<5->{Population is 50\% compliers, 25\% always takers, 25\% never takers}\\
+\onslide<6->{Average effect of $Z\rightarrow Y$ among compliers is 0.6}\vskip .1in
+\onslide<7->{What is the average effect of $Z\rightarrow Y$ in the population? \only<8->{\bblue{0.3}}}
+
+\end{frame}
+
+\begin{frame}{Instrumental variables: 2) Average effect among compliers}
+Deriving the general case: \pause
+$$\begin{small}
+\begin{aligned}
+&\E(Y^{Z = 1} - Y^{Z = 0}) \\ \pause
+&= \sum_s \E(Y^{Z = 1} - Y^{Z = 0}\mid S = s)\underbrace{\P(S = s)}_{\substack{\text{Denote}\\\pi_s}} \\ \pause
+&= \E(Y^{Z = 1} - Y^{Z = 0}\mid S = \text{Complier})\pi_\text{Complier} \\
+&\qquad + \E(Y^{Z = 1} - Y^{Z = 0}\mid S = \text{Always-Taker})\pi_\text{Always-Taker} &\onslide<5->{\gray{(=0)}} \\
+&\qquad + \E(Y^{Z = 1} - Y^{Z = 0}\mid S = \text{Never-Taker})\pi_\text{Never-Taker}  &\onslide<5->{\gray{(=0)}}\\
+&\qquad + \E(Y^{Z = 1} - Y^{Z = 0}\mid S = \text{Defier})\pi_\text{Defier} &\onslide<5->{\gray{(=0)}}
+\end{aligned}
+\end{small}$$
+
+\end{frame}
+
+
+\begin{frame}{Instrumental variables: 2) Average effect among compliers}
+\begin{center}
+\begin{tikzpicture}[x = .5\textwidth]
+\node at (0,0) {$\E(Y^{Z = 1} - Y^{Z = 0}) = \E(Y^{Z = 1} - Y^{Z = 0}\mid S = \text{Complier})\pi_\text{Complier}$}; \pause
+\node[anchor = north, font = \footnotesize, gray, align = center] at (-.64,1.5) {Average effect\\of instrument};
+\node[anchor = north, font = \footnotesize, gray, align = center] at (-.35,1.3) {=};
+\node[anchor = north, font = \footnotesize, gray, align = center] at (.1,1.5) {Average among\\compliers};
+\node[anchor = north, font = \footnotesize, gray, align = center] at (.5,1.3) {$\times$};
+\node[anchor = north, font = \footnotesize, gray, align = center] at (.8,1.5) {Proportion\\who comply};
+\end{tikzpicture}
+\end{center} \onslide<3->{
+Among compliers, ($Z\rightarrow Y$) = ($A\rightarrow Y$).
+}
+\onslide<4->{
+$$\E(Y^{Z = 1} - Y^{Z = 0}) = \E(Y^{A = 1} - Y^{A = 0}\mid S = \text{Complier})\pi_\text{Complier}$$
+}
+\onslide<5->{
+Rearrange to get the complier average treatment effect
+}
+\onslide<6->{$$\begin{aligned}
+\E(Y^{A = 1} - Y^{A = 0}\mid S = \text{Complier}) &= \frac{\E(Y^{Z = 1} - Y^{Z = 0})}{\pi_\text{Complier}} \\
+}
+\onslide<7->{
+&= \frac{\E(Y^{Z = 1} - Y^{Z = 0})}{\E(A^{Z = 1} - A^{Z = 0})}
+\end{aligned}$$
+}
+\end{frame}
+
+\begin{frame}{Instrumental variables: 2) Average effect among compliers}
+
+\begin{center}
+\scalebox{.4}{\begin{tikzpicture}[x = 1in, y = .5in]
+    \node (z) at (-1,0) {$Z$};
+    \node (a) at (0,0) {$A$};
+    \node (y) at  (1,0) {$Y$};
+    \node (u) at  (0,-1) {$U$};
+    \draw[->, >=stealth, thick] (z) -- (a);
+    \draw[->, >=stealth, thick] (a) --  (y);
+    \draw[->, >=stealth, thick] (u) --  (a);
+    \draw[->, >=stealth, thick] (u) --  (y);
+    \node[anchor = south, align = center, font = \footnotesize] at (z.north) {Randomized\\to drug or\\placebo};
+    \node[anchor = south, align = center, font = \footnotesize] at (a.north) {Actually\\takes drug or\\placebo};
+    \node[anchor = south, align = center, font = \footnotesize] at (y.north) {Health\\outcome};
+    \node[anchor = north, align = center, font = \footnotesize] at (u.south) {Inclination\\to comply};
+    \node[anchor = north, font = \bf, gray] at (-1,1.8) {Instrument};
+    \node[anchor = north, font = \bf, gray] at (0,1.8) {Treatment};
+    \node[anchor = north, font = \bf, gray] at (1,1.8) {Outcome};
+  \end{tikzpicture}}
+\end{center}
+
+\begin{small}
+Summary: Average treatment effect among compliers
+\begin{enumerate}
+\item Estimate the average effect of $Z$ on $Y$
+\item Estimate the average effect of $Z$ on $A$
+\item Divide (1) by (2)
+\end{enumerate} \vskip .1in
+Assumptions that got us there:
+\begin{enumerate}
+\item Instrument $Z$ is unconfounded \hfill (exogeneity)
+\item $Z\rightarrow Y$ is entirely mediated by $M$ \hfill (exclusion restriction)
+\item No defiers \hfill (monotonicity)
+\end{enumerate}
+where (3) is an assumption outside of the DAG
+\end{small}
+\end{frame}
+
+\begin{frame}{Two equivalent estimators} \pause
+
+We have been studying the \bgray{Wald estimator}
+$$\frac{E(Y\mid Z = 1) - \E(Y\mid Z = 0)}{\E(A\mid Z = 1) - \E(A\mid Z = 0)}  \pause = \frac{\Cov(Z,Y)}{\Cov(Z,A)}$$ \pause
+where the version at the right generalizes continuous variables\\in a linear system \vskip .3in \pause
+A numerically equivalent estimator is \bgray{two-stage-least-squares}:
+\begin{enumerate} \pause
+\item Regress $A$ on $Z$ \pause
+\item Predict $\hat{A}$
+\begin{itemize}
+\item Intuition: Isolates $Z$-generated variation in $A$ \pause
+\end{itemize}
+\item Regress $Y$ on $\hat{A}$
+\end{enumerate}
+\end{frame}
+
+\begin{frame}
+\Large
+An observational settings that is \bgray{clean}
+\end{frame}
+
+\begin{frame}
+
+\includegraphics[height = .8\textheight]{figures/VietnamNumbers} \\
+\url{https://www.historynet.com/whats-your-number/}
+
+\end{frame}
+
+\begin{frame}
+
+\includegraphics[width = .6\textwidth]{figures/VietnamDraw}
+\url{https://commons.wikimedia.org/wiki/File:1969_draft_lottery_photo.jpg}
+
+\end{frame}
+
+\begin{frame}%{Assumptions are less plausible in observational studies}
+
+\begin{tikzpicture}[x = 1in, y = .5in]
+    \node (z) at (-1,0) {$Z$};
+    \node (a) at (0,0) {$A$};
+    \node (y) at  (1,0) {$Y$};
+    \node (u) at  (0,-1) {$U$};
+    \draw[->, >=stealth, thick] (z) -- (a);
+    \draw[->, >=stealth, thick] (a) --  (y);
+    \draw[->, >=stealth, thick] (u) --  (a);
+    \draw[->, >=stealth, thick] (u) --  (y);
+    \node[anchor = south, align = center, font = \footnotesize] at (z.north) {Drafted to serve\\in Vietnam};
+    \node[anchor = south, align = center, font = \footnotesize] at (a.north) {Served in\\military};
+    \node[anchor = south, align = center, font = \footnotesize] at (y.north) {Earnings in 1980s};
+    \node[anchor = north, align = center, font = \footnotesize] at (u.south) {Noncompliance};
+    %\node[anchor = north, font = \bf, gray] at (-1,1.8) {Instrument};
+    %\node[anchor = north, font = \bf, gray] at (0,1.8) {Treatment};
+    %\node[anchor = north, font = \bf, gray] at (1,1.8) {Outcome};
+  \end{tikzpicture} \vskip .1in \pause
+  This is credible
+  \begin{itemize} \pause
+  \item Exogeneity: Randomly selected draft numbers \pause
+  \item Exclusion: Being drafted affects earnings only through service \pause
+  \item Monotonicity: No one joins the military in defiance of not being drafted
+  \end{itemize}
+   \vskip .2in
+\begin{footnotesize}Angrist, J. D. (1990). \bref{https://www.jstor.org/stable/2006669}{Lifetime earnings and the Vietnam era draft lottery: Evidence from Social Security administrative records.} The American Economic Review, 313-336.
+\end{footnotesize}
+
+\end{frame}
+
+\begin{frame}
+\Large
+Observational settings that are \bgray{less straightforward}
+\end{frame}
+
+\begin{frame}{A difficult example: Genes as instruments} \pause
+
+\begin{tikzpicture}[x = 1in, y = .5in]
+    \node (z) at (-1,0) {$Z$};
+    \node (a) at (0,0) {$A$};
+    \node (y) at  (1,0) {$Y$};
+    \node (u) at  (0,-1) {$U$};
+    \node[anchor = south, align = center, font = \footnotesize] at (z.north) {Gene for\\height};
+    \node[anchor = south, align = center, font = \footnotesize] at (a.north) {Tall};
+    \node[anchor = south, align = center, font = \footnotesize] at (y.north) {Earnings};
+    \node[anchor = north, align = center, font = \footnotesize] at (u.south) {Nutrition};
+    \draw[->, thick] (z) -- (a);
+    \draw[->, thick] (a) --  (y);
+    \draw[->, thick] (u) --  (a);
+    \draw[->, thick] (u) --  (y);
+    \pause
+    \draw[->, thick, dashed, red] (z) to[bend left] node[midway, above, font = \footnotesize, red, align = center] {\textbf{Exclusion Violated}\\Pleiotropy: One gene\\affects many phenotypes} (y);
+    \pause
+    \node[red, font = \footnotesize, align = center] (v1) at (-1,-2.5) {Parents\\tall};
+    \draw[->, thick, red, dashed] (v1) -- (z);
+    \pause
+    \node[red, font = \footnotesize, align = center] (v2) at (0,-2.5) {Parents\\advantaged\\in labor market};
+    \draw[->, thick, red, dashed] (v1) -- (v2);
+    \pause
+    \node[red, font = \footnotesize, align = center] (v3) at (1,-2.5) {Parents\\help you\\get job};
+    \draw[->, thick, red, dashed] (v2) -- (v3);
+    \draw[->, thick, red, dashed] (v3) -- (y);
+    \pause
+    \node[red, font = {\footnotesize\bf}, align = center] at (0,-3.2) {Exogeneity Violated};
+  \end{tikzpicture}
+
+\end{frame}
+
+\begin{frame}{\bred{Warning:} IV is very sensitive to assumptions}{Fig 5 from Felton, C., \& Stewart, B. M. (2022). \bref{https://doi.org/10.31235/osf.io/3ua7q}{Handle with Care: A Sociologist's Guide to Causal Inference with Instrumental Variables.} SocArXiv.}
+\includegraphics[width = .5\textwidth]{figures/fs_fig5a} \pause
+\includegraphics[width = .5\textwidth]{figures/fs_fig5b}
+\end{frame}
+
+\begin{frame}
+\begin{Large}Examples where things are very hard\end{Large} \vskip .3in \pause
+
+From Table 1 in Felton, C., \& Stewart, B. M. (2022). Working paper. \bref{https://doi.org/10.31235/osf.io/3ua7q}{Handle with Care: A Sociologist's Guide to Causal Inference with Instrumental Variables.}
+
+\end{frame}
+
+\begin{frame}
+
+1. Kirk (2009)\footnote{Kirk, D. S. (2009). \bref{https://journals.sagepub.com/doi/abs/10.1177/000312240907400308}{A natural experiment on residential change and recidivism: Lessons from Hurricane Katrina.} American Sociological Review, 74(3), 484-505.} studies recidivism among parolees
+\begin{itemize}
+\item $Z$: Parolee released before or after Hurricane Katrina
+\item $A$: Parolee returns to home neighborhood upon release
+\item $Y$: Recidivism
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{\footnotesize From Table 1 in Felton, C., \& Stewart, B. M. (2022). Working paper.\\\bref{https://doi.org/10.31235/osf.io/3ua7q}{Handle with Care: A Sociologist's Guide to Causal Inference with Instrumental Variables.}}
+\includegraphics[width = \textwidth]{figures/fs_tab1a}
+\end{frame}
+
+\begin{frame}
+
+2. Laidley \& Conley (2018)\footnote{Laidley, T., \& Conley, D. (2018). \bref{https://academic.oup.com/sf/article-abstract/97/1/129/4960019}{The effects of active and passive leisure on cognition in children: Evidence from exogenous variation in weather.} Social Forces, 97(1), 129-156.} study variation in sunlight exposure across days for children observed repeatedly
+\begin{itemize}
+\item $Z$: Sunlight
+\item $A$: Exercise
+\item $Y$: Test scores
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{\footnotesize From Table 1 in Felton, C., \& Stewart, B. M. (2022). Working paper.\\\bref{https://doi.org/10.31235/osf.io/3ua7q}{Handle with Care: A Sociologist's Guide to Causal Inference with Instrumental Variables.}}
+\includegraphics[width = \textwidth]{figures/fs_tab1b}
+\end{frame}
+
+\begin{frame}
+
+3. Sampson \& Winter (2018)\footnote{Sampson, R. \& Winter, A. (2018). \bref{https://doi.org/10.1111/1745-9125.12171}{Poisoned development: Assessing childhood lead exposure as a cause of crime in a birth cohort followed through adolescence.} Criminology, 56(2), 269-301.} study child development
+\begin{itemize}
+\item $Z$: Proximity to a smelting plant
+\item $A$: Lead exposure
+\item $Y$: Delinquent behavior
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{\footnotesize From Table 1 in Felton, C., \& Stewart, B. M. (2022). Working paper.\\\bref{https://doi.org/10.31235/osf.io/3ua7q}{Handle with Care: A Sociologist's Guide to Causal Inference with Instrumental Variables.}}
+\includegraphics[width = \textwidth]{figures/fs_tab1c}
+\end{frame}
+
+\begin{frame}
+
+4. Harding et al. (2018)\footnote{Harding, D. J., Morenoff, J. D., Nguyen, A. P., \& Bushway, S. D. (2018). \bref{https://doi.org/10.1086/697507}{Imprisonment and labor market outcomes: Evidence from a natural experiment.} American Journal of Sociology, 124(1), 49-110.} study defendants in criminal court.
+\begin{itemize}
+\item $Z$: Which judge is assigned for the trial
+\item $A$: Sentence of incarceration
+\item $Y$: Employment after release
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{\footnotesize From Table 1 in Felton, C., \& Stewart, B. M. (2022). Working paper.\\\bref{https://doi.org/10.31235/osf.io/3ua7q}{Handle with Care: A Sociologist's Guide to Causal Inference with Instrumental Variables.}}
+\includegraphics[width = \textwidth]{figures/fs_tab1d}
+\end{frame}
+
+\begin{frame}{Summary}
+
+Instrumental variables requires strong assumptions \vskip .1in
+\begin{itemize}
+\item Exogenous instrument \hfill (e.g., randomization)
+\item Mediated fully through the treatment 
+\item Under monotonicity \hfill (e.g., no defiers)
+\end{itemize} \vskip .1in
+Works well in randomized studies with noncompliance.\vskip .3in
+
+In observational settings, keep the experimental ideal in mind!\\
+Usefulness depends on how close it is to that ideal.
+
+\end{frame}
+
+
+\begin{frame}{Complications we have not addressed today}
+\begin{itemize}
+\item Proxy instruments
+\item Non-binary instruments
+\item Non-binary treatments
+\end{itemize}
+\end{frame}
+
+\goalsframe
+
+\begin{frame}{Let me know what you are thinking}
+
+\begin{huge} \bref{https://tinyurl.com/CausalQuestions}{tinyurl.com/CausalQuestions} \end{huge}
+\vskip .7in
+
+Office hours TTh 11am-12pm and at \bref{https://calendly.com/ianlundberg/office-hours}{calendly.com/ianlundberg/office-hours}\\Come say hi!
+
+\end{frame}
+
+
+\end{document}
+
