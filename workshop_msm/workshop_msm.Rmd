@@ -19,6 +19,8 @@ This page introduces code for marginal structural models through an intentionall
 library(tidyverse)
 ```
 
+> **Stata users.** Analogous code is [here](https://github.com/ilundberg/teaching/tree/master/workshop_msm/msm_stata.do)
+
 ## Causal goal and identification assumptions
 
 Our causal estimand is the average outcome $E(Y^{a_1,a_2})$ that would be realized under an intervention to set the period-1 treatment $A_1$ to the value $a_1$ and the period-2 treatment $A_2$ to the value $a_2$.

@@ -18,6 +18,9 @@ want to prepare your R environment.
 library(tidyverse)
 ```
 
+> **Stata users.** Analogous code is
+> [here](https://github.com/ilundberg/teaching/tree/master/workshop_msm/msm_stata.do)
+
 ## Causal goal and identification assumptions
 
 Our causal estimand is the average outcome $E(Y^{a_1,a_2})$ that would
@@ -53,13 +56,13 @@ simulated <- simulate(n = 100)
 print(head(simulated), digits = 1)
 ```
 
-    ##      X1 A1   U2   X2 A2  Y
-    ## 1  1.07  1  0.7  2.8  1  7
-    ## 2 -0.09  0 -1.3 -2.1  0 -4
-    ## 3 -1.59  0 -0.9 -0.7  1 -2
-    ## 4  0.14  0 -1.8 -3.2  1 -3
-    ## 5 -1.49  0 -0.2 -0.1  1 -2
-    ## 6  1.22  0 -2.0 -4.7  1 -5
+    ##     X1 A1   U2   X2 A2    Y
+    ## 1 -1.2  0 -0.6 -0.7  0 -1.9
+    ## 2 -0.4  0  0.6  0.2  0 -0.3
+    ## 3 -1.5  1  0.7  2.6  1  4.6
+    ## 4  0.9  1 -1.1 -1.4  0  0.4
+    ## 5 -0.5  1  0.4 -0.3  1  1.6
+    ## 6  1.0  1 -1.0  1.3  1  3.9
 
 ## Model treatment assignment
 
@@ -124,8 +127,8 @@ with_weight %>%
     ## # A tibble: 2 × 2
     ##      A1 estimate
     ##   <int>    <dbl>
-    ## 1     0   -0.182
-    ## 2     1    1.71
+    ## 1     0   -0.126
+    ## 2     1    1.34
 
 Total effect of treatment at time 2,
 
@@ -138,8 +141,8 @@ with_weight %>%
     ## # A tibble: 2 × 2
     ##      A2 estimate
     ##   <int>    <dbl>
-    ## 1     0    0.216
-    ## 2     1    1.30
+    ## 1     0   0.0746
+    ## 2     1   1.43
 
 Effect of joint intervention on $A_1$ and $A_2$,
 
@@ -156,10 +159,10 @@ with_weight %>%
     ## # Groups:   A1 [2]
     ##      A1    A2 estimate
     ##   <int> <int>    <dbl>
-    ## 1     0     0   -0.940
-    ## 2     0     1    0.567
-    ## 3     1     0    1.43 
-    ## 4     1     1    1.98
+    ## 1     0     0   -0.765
+    ## 2     0     1    0.930
+    ## 3     1     0    0.943
+    ## 4     1     1    1.96
 
 ## Marginal structural modeling estimator
 
@@ -193,10 +196,10 @@ to_predict %>%
 ```
 
     ##   A1 A2   estimate
-    ## 1  0  0 -0.6938119
-    ## 2  0  1  0.3431252
-    ## 3  1  0  1.1859517
-    ## 4  1  1  2.2228888
+    ## 1  0  0 -0.5943946
+    ## 2  0  1  0.7581789
+    ## 3  1  0  0.7757050
+    ## 4  1  1  2.1282785
 
 ## When you finish
 
