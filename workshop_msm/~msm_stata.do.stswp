@@ -59,3 +59,8 @@ bysort A1 A2: summarize Y [aw = weight]
 regress Y A1 A2 [w = weight]
 margins, by(A1 A2)
 
+* then need to make predictions in a new dataset with variables
+* A1 = (0,0,1,1)
+* A2 = (0,1,0,1)
+
+
