@@ -1,0 +1,194 @@
+\documentclass{beamer}
+\usecolortheme{dove}
+\setbeamertemplate{navigation symbols}{}
+\newenvironment{alltt}{\ttfamily}{\par}
+\usepackage{amsmath,amssymb,amsfonts,amsthm, multicol, subfigure, color}
+\usepackage{bm}
+\usepackage{graphicx}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{pdfpages}
+\usepackage{xcolor}
+\definecolor{dodgerblue}{rgb}{.118, .575, 1}
+\definecolor{seagreen4}{RGB}{46, 139, 87}
+\definecolor{ucla}{RGB}{37, 116, 173}
+\def\independenT#1#2{\mathrel{\rlap{$#1#2$}\mkern2mu{#1#2}}}
+\newcommand\independent{\protect\mathpalette{\protect\independenT}{\perp}}
+\newcommand\indep{\protect\mathpalette{\protect\independenT}{\perp}}
+\def\logit{\text{logit}}
+\usepackage{stackrel}
+\usepackage{tikz}
+\usetikzlibrary{arrows,shapes.arrows,positioning,shapes,patterns,calc}
+\newcommand\slideref[1]{\vskip .1cm \scriptsize \textcolor{gray}{{#1}}}
+\definecolor{seagreen}{RGB}{46, 139, 87}
+\newcommand\red[1]{\color{red}#1}
+\newcommand\blue[1]{\color{blue}#1}
+\newcommand\gray[1]{\color{gray}#1}
+\newcommand\green[1]{\color{olive}#1}
+\newcommand\seagreen[1]{\color{seagreen}#1}
+\newcommand\purple[1]{\color{purple}#1}
+\newcommand\orange[1]{\color{orange}#1}
+\newcommand\black[1]{\color{black}#1}
+\newcommand\white[1]{\color{white}#1}
+\newcommand\teal[1]{\color{teal}#1}
+\newcommand\magenta[1]{\color{magenta}#1}
+\newcommand\Fuchsia[1]{\color{Fuchsia}#1}
+\newcommand\BlueGreen[1]{\color{BlueGreen}#1}
+\newcommand\bblue[1]{\textcolor{blue}{\textbf{#1}}}
+\newcommand\bred[1]{\textcolor{red}{\textbf{#1}}}
+\newcommand\bgray[1]{\textcolor{gray}{\textbf{#1}}}
+\newcommand\bgreen[1]{\textcolor{seagreen}{\textbf{#1}}}
+\colorlet{lightgray}{gray!40}
+\pgfdeclarelayer{bg}    % declare background layer for tikz
+\pgfsetlayers{bg,main} % order layers for tikz
+\newcommand\bref[2]{\href{#1}{\color{blue}{#2}}}
+\newcommand\mycite[1]{\begin{scriptsize}\textcolor{darkgray}{(#1)}\end{scriptsize}}
+\newcommand\iid{\stackrel{\text{iid}}{\sim}}
+\newcommand\E{\text{E}}
+\newcommand\V{\text{V}}
+\renewcommand\P{\text{P}}
+\newcommand{\Cov}{\text{Cov}}
+\newcommand{\Cor}{\text{Cor}}
+\newcommand\doop{\text{do}}
+\newcommand{\tcframe}{\frame{
+\small{
+\only<1|handout:0>{\tableofcontents}
+\only<2|handout:1>{\tableofcontents[currentsection]}}
+}}
+% Credit for the following to https://tex.stackexchange.com/questions/44983/beamer-removing-headline-and-its-space-on-a-single-frame-for-plan-but-keepin
+\makeatletter
+    \newenvironment{withoutheadline}{
+        \setbeamertemplate{headline}[default]
+        \def\beamer@entrycode{\vspace*{-\headheight}}
+    }{}
+\makeatother
+\setbeamercovered{invisible}
+%\setbeamertemplate{footline}{\begin{minipage}{2in}\includegraphics[width = 2in, trim = {0 1.4in 0 .6in}, clip]{figures/logo_1.png}\\\textcolor{black}{\hspace{9pt} \scriptsize Ian Lundberg \& Jennie E. Brand\\{}}\end{minipage}}
+\usepackage[round]{natbib}
+\bibliographystyle{humannat-mod}
+\setbeamertemplate{enumerate items}[default]
+\usepackage{mathtools}
+\usepackage{ifthen}
+
+\title{Causal Estimators: Conceptual Overview}
+\author{\begin{tabular}{cc} Ian Lundberg & Kristin Liao\\Cornell & UCLA \end{tabular}}
+%\author{\begin{tabular}{cc} a & b \end{tabular}}
+\date{28 June 2024}
+
+
+
+\begin{document}
+
+\maketitle
+
+\begin{frame}
+\begin{tikzpicture}[x = .2\textwidth, y = .1\textheight]
+\draw[xstep = 1, ystep = 1] (0, 6) grid (2, 9);
+\draw[xstep = 1, ystep = 1] (0, 2) grid (2, 5);
+\node[rotate = 90, anchor = south] at (-.1, 7.5) {Confounder = 1};
+\node[rotate = 90, anchor = south] at (-.1, 3.5) {Confounder = 2};
+\node[anchor = south, align = center] at (.5,9.2) {Outcome\\under\\control};
+\node[anchor = south, align = center] at (1.5,9.2) {Outcome\\under\\treatment};
+\node at (.5,8.5) {1};
+\node at (1.5,8.5) {?};
+\node at (.5,7.5) {?};
+\node at (1.5,7.5) {2};
+\node at (.5,6.5) {?};
+\node at (1.5,6.5) {2};
+%%%
+\node at (.5,4.5) {2};
+\node at (1.5,4.5) {?};
+\node at (.5,3.5) {2};
+\node at (1.5,3.5) {?};
+\node at (.5,2.5) {?};
+\node at (1.5,2.5) {3};
+% OUTCOME MODELING
+\only<2-4>{
+\node<2->[anchor = north west, align = left] at (2.5,9) {\textbf{Outcome Modeling}};
+\node<2->[anchor = north west, align = left] at (2.5,8.25) {1)};
+\node<2->[anchor = north west, align = left] at (2.5,7) {2)};
+\node<2->[anchor = north west, align = left] at (2.7,8.25) {Model the conditional mean\\of the observed outcomes};
+\node<2->[anchor = north west, align = left] at (2.7,7) {Predict counterfactuals};
+\node<3->[anchor = north west] at (2.5,5.5) {$\E(Y\mid A, X) = \alpha + \beta X + \gamma A$};
+\node<3->[anchor = north west] at (2.5,4.5) {$\hat\alpha = 0$, $\hat\beta = 1$, $\hat\gamma = 1$};
+\only<4->{
+\node[color = black, fill = white] at (1.5,8.5) {$\hat{Y}^1 = 2$};
+\node[color = black, fill = white] at (.5,7.5) {$\hat{Y}^0 = 1$};
+\node[color = black, fill = white] at (.5,6.5) {$\hat{Y}^0 = 1$};
+\node[color = black, fill = white] at (1.5,4.5) {$\hat{Y}^1 = 3$};
+\node[color = black, fill = white] at (1.5, 3.5) {$\hat{Y}^1 = 3$};
+\node[color = black, fill = white] at (.5, 2.5) {$\hat{Y}^0 = 2$};
+}
+}
+% WEIGHTING
+\only<5-7>{
+\node[anchor = north west, align = left] (w) at (4,10.8) {\textbf{Weighting}};
+\draw[line width = .8pt] (w.north west) -- (w.south west) -- (w.south east);
+\onslide<6->{
+\draw[xstep = 1, ystep = 1] (2, 6) grid (3, 9);
+\draw[xstep = 1, ystep = 1] (2, 2) grid (3, 5);
+\node[anchor = south, align = center] at (2.5,9.2) {Probability\\of Observed\\Treatment};
+\node at (2.5,8.5) {1 / 3};
+\node at (2.5,7.5) {2 / 3};
+\node at (2.5,6.5) {2 / 3};
+\node at (2.5,4.5) {2 / 3};
+\node at (2.5,3.5) {2 / 3};
+\node at (2.5,2.5) {1 / 3};
+}
+%%%
+\onslide<7->{
+\draw[xstep = 1, ystep = 1] (3, 6) grid (4, 9);
+\draw[xstep = 1, ystep = 1] (3, 2) grid (4, 5);
+\node[anchor = south, align = center] at (3.5,9.2) {Inverse\\Probability\\Weight};
+\node at (3.5,8.5) {3};
+\node at (3.5,7.5) {3 / 2};
+\node at (3.5,6.5) {3 / 2};
+\node at (3.5,4.5) {3 / 2};
+\node at (3.5,3.5) {3 / 2};
+\node at (3.5,2.5) {3};
+}
+}
+% MATCHING
+\only<8->{
+\node[anchor = north west, align = left] (w) at (4,10.8) {\textbf{Matching}};
+\draw[line width = .8pt] (w.north west) -- (w.south west) -- (w.south east);
+%\node<2->[anchor = north west, align = left] at (2.5,8.25) {1)};
+%\node<2->[anchor = north west, align = left] at (2.5,7) {2)};
+%\node<2->[anchor = north west, align = left] at (2.7,8.25) {Model the conditional mean\\of the observed outcomes};
+%\node<2->[anchor = north west, align = left] at (2.7,7) {Predict counterfactuals};
+%\node<3->[anchor = north west] at (2.5,5.5) {$\E(Y\mid A, X) = \alpha + \beta X + \gamma A$};
+%\node<3->[anchor = north west] at (2.5,4.5) {$\hat\alpha = 0$, $\hat\beta = 1$, $\hat\gamma = 1$};
+\draw[line width = 1pt, blue] (0,6) rectangle (2,9);
+\node[blue, align = center] at (2.5,7.5) {Matched\\Set};
+\draw[line width = 1pt, red] (0,2) rectangle (2,5);
+\node[red, align = center] at (2.5,3.5) {Matched\\Set};
+\only<9>{
+\node[color = blue, fill = white] at (1.5,8.5) {$2$};
+\node[color = blue, fill = white] at (.5,7.5) {$1$};
+\node[color = blue, fill = white] at (.5,6.5) {$1$};
+\node[color = red, fill = white] at (1.5,4.5) {$3$};
+\node[color = red, fill = white] at (1.5, 3.5) {$3$};
+\node[color = red, fill = white] at (.5, 2.5) {$2$};
+}
+\draw[->, blue, line width = 1pt] (.6,8.3) to[bend left] (.6, 7.7);
+\draw[->, blue, line width = 1pt] (.6,8.3) to[bend left] (.6, 6.7);
+\draw[->, blue, line width = 1pt] (1.6,7.7) to[bend right] (1.6, 8.3);
+%\draw[->, blue, line width = 1pt] (1.6,6.7) to[bend right] (1.6, 8.3);
+\draw[->, red, line width = 1pt] (.6,3.3) to[bend left] (.6, 2.7);
+%\draw[->, red, line width = 1pt] (.6,4.3) to[bend left] (.6, 2.7);
+\draw[->, red, line width = 1pt] (1.6,2.7) to[bend right] (1.6, 3.3);
+\draw[->, red, line width = 1pt] (1.6,2.7) to[bend right] (1.6, 4.3);
+}
+\only<10->{
+\node[color = black, fill = white] at (1.5,8.5) {$\hat{Y}^1 = 2$};
+\node[color = black, fill = white] at (.5,7.5) {$\hat{Y}^0 = 1$};
+\node[color = black, fill = white] at (.5,6.5) {$\hat{Y}^0 = 1$};
+\node[color = black, fill = white] at (1.5,4.5) {$\hat{Y}^1 = 3$};
+\node[color = black, fill = white] at (1.5, 3.5) {$\hat{Y}^1 = 3$};
+\node[color = black, fill = white] at (.5, 2.5) {$\hat{Y}^0 = 2$};
+}
+\end{tikzpicture}
+\end{frame}
+
+\end{document}
